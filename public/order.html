@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complete Your Exchange | AstroShift.io</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><defs><radialGradient id=%22grad%22 cx=%2230%25%22 cy=%2230%25%22 r=%2270%25%22><stop offset=%220%25%22 stop-color=%22%2300d4ff%22/><stop offset=%22100%25%22 stop-color=%22%234f7eff%22/></radialGradient></defs><circle cx=%2250%22 cy=%2250%22 r=%2240%22 fill=%22url(%23grad)%22 stroke=%22white%22 stroke-width=%222%22/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #050511;
+      --bg-panel: rgba(30, 32, 60, 0.6);
+      --bg-card: rgba(18, 20, 35, 0.85);
+      --primary: #4f7eff;
+      --primary-glow: rgba(79, 126, 255, 0.5);
+      --accent-cyan: #00d4ff;
+      --text-main: #ffffff;
+      --text-muted: #8b90b5;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --error: #ff4757;
+      --success: #2ed573;
+      --warning: #ffa502;
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-dark);
+      min-height: 100vh;
+      color: var(--text-main);
+    }
+    
+    .bg-stars {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: url("data:image/svg+xml,%3Csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='stars' width='200' height='200' patternUnits='userSpaceOnUse'%3E%3Ccircle cx='10' cy='10' r='1' fill='rgba(255,255,255,0.15)'/%3E%3Ccircle cx='50' cy='80' r='0.5' fill='rgba(255,255,255,0.1)'/%3E%3Ccircle cx='150' cy='40' r='1.2' fill='rgba(255,255,255,0.2)'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23stars)'/%3E%3C/svg%3E");
+      z-index: -1;
+    }
+    
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 30px 20px;
+    }
+    
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 40px;
+      text-decoration: none;
+      color: inherit;
+    }
+    
+    .header:hover {
+      opacity: 0.9;
+    }
+    
+    .logo-icon {
+      width: 40px; height: 40px;
+      background: radial-gradient(circle at 30% 30%, #00d4ff, #4f7eff);
+      border-radius: 50%;
+      position: relative;
+      box-shadow: 0 0 15px rgba(79, 126, 255, 0.6);
+    }
+    
+    .logo-icon::before {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 140%; height: 40%;
+      border: 2px solid rgba(255,255,255,0.6);
+      border-radius: 50%;
+      transform: translate(-50%, -50%) rotate(-30deg);
+    }
+    
+    .logo-text {
+      font-size: 1.5rem;
+      font-weight: 800;
+    }
+    
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 20px;
+      backdrop-filter: blur(20px);
+    }
+    
+    .card-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 25px;
+      text-align: center;
+    }
+    
+    .order-summary {
+      background: rgba(0,0,0,0.2);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 25px;
+    }
+    
+    .order-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    
+    .order-row:last-child {
+      border-bottom: none;
+    }
+    
+    .order-label {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+    
+    .order-value {
+      font-weight: 600;
+      word-break: break-all;
+      text-align: right;
+      max-width: 60%;
+    }
+    
+    .order-value.order-id {
+      font-family: monospace;
+      font-size: 0.8rem;
+      max-width: 70%;
+    }
+    
+    .order-value.large {
+      font-size: 1.2rem;
+      color: var(--accent-cyan);
+    }
+    
+    .payment-info {
+      background: linear-gradient(135deg, rgba(79, 126, 255, 0.1), rgba(0, 212, 255, 0.1));
+      border: 1px solid rgba(79, 126, 255, 0.3);
+      border-radius: 12px;
+      padding: 25px;
+      text-align: center;
+      margin-bottom: 25px;
+    }
+    
+    .payment-title {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 10px;
+    }
+    
+    .payment-dest {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      word-break: break-all;
+    }
+    
+    .payment-icon {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 15px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: bold;
+      color: white;
+    }
+    
+    .payment-icon.cashapp { background: #00d632; }
+    .payment-icon.zelle { background: #6d1ed4; }
+    .payment-icon.paypal { background: #00457c; }
+    
+    .crypto-address {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 15px;
+      font-family: monospace;
+      font-size: 0.85rem;
+      word-break: break-all;
+      text-align: center;
+      margin: 15px 0;
+    }
+    
+    .copy-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-family: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .copy-btn:hover {
+      background: #3d6ae8;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    
+    .form-group input {
+      width: 100%;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 14px 18px;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+    
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 126, 255, 0.2);
+    }
+    
+    .btn {
+      width: 100%;
+      padding: 16px;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), #0066cc);
+      color: white;
+      box-shadow: 0 0 20px var(--primary-glow);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 30px var(--primary-glow);
+    }
+    
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .inline-error {
+      background: rgba(255, 71, 87, 0.1);
+      border: 1px solid rgba(255, 71, 87, 0.3);
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #ff6b7a;
+      font-size: 0.9rem;
+    }
+    
+    .inline-error.hidden {
+      display: none;
+    }
+    
+    .inline-error .error-icon {
+      font-size: 1.1rem;
+    }
+    
+    .inline-success {
+      background: rgba(0, 212, 170, 0.1);
+      border: 1px solid rgba(0, 212, 170, 0.3);
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #00d4aa;
+      font-size: 0.9rem;
+    }
+    
+    .inline-success.hidden {
+      display: none;
+    }
+    
+    .status-section {
+      text-align: center;
+      padding: 40px 20px;
+    }
+    
+    .status-icon {
+      font-size: 4rem;
+      margin-bottom: 20px;
+    }
+    
+    .status-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    
+    .status-desc {
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    
+    .status-badge.pending { background: rgba(255,165,2,0.2); color: var(--warning); }
+    .status-badge.processing { background: rgba(0,212,255,0.2); color: var(--accent-cyan); }
+    .status-badge.success { background: rgba(46,213,115,0.2); color: var(--success); }
+    .status-badge.error { background: rgba(255,71,87,0.2); color: var(--error); }
+    
+    .timer {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--warning);
+      margin: 20px 0;
+    }
+    
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 25px;
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+    
+    .back-link:hover {
+      color: white;
+    }
+    
+    .steps {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin-bottom: 30px;
+    }
+    
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-muted);
+    }
+    
+    .step.active {
+      color: var(--primary);
+    }
+    
+    .step.completed {
+      color: var(--success);
+    }
+    
+    .step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      background: rgba(255,255,255,0.1);
+    }
+    
+    .step.active .step-num {
+      background: var(--primary);
+      color: white;
+    }
+    
+    .step.completed .step-num {
+      background: var(--success);
+      color: white;
+    }
+    
+    .hidden { display: none; }
+    
+    .instructions {
+      background: rgba(255,165,2,0.1);
+      border: 1px solid rgba(255,165,2,0.3);
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+    }
+    
+    .instructions strong {
+      color: var(--warning);
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-stars"></div>
+  
+  <div class="container">
+    <a href="/" class="header">
+      <div class="logo-icon"></div>
+      <span class="logo-text">AstroShift</span>
+    </a>
+    
+    <!-- Step indicators -->
+    <div class="steps">
+      <div class="step active" id="step1">
+        <span class="step-num">1</span>
+        <span>Send Payment</span>
+      </div>
+      <div class="step" id="step2">
+        <span class="step-num">2</span>
+        <span>Confirm</span>
+      </div>
+      <div class="step" id="step3">
+        <span class="step-num">3</span>
+        <span>Complete</span>
+      </div>
+    </div>
+    
+    <!-- Loading State -->
+    <div class="card" id="loading-section">
+      <div class="status-section">
+        <div class="status-icon">⏳</div>
+        <div class="status-title">Loading Order...</div>
+      </div>
+    </div>
+    
+    <!-- Fiat Payment Section -->
+    <div class="card hidden" id="fiat-section">
+      <div class="card-title">Complete Your Exchange</div>
+      
+      <div class="order-summary">
+        <div class="order-row">
+          <span class="order-label">You Send</span>
+          <span class="order-value large" id="fiat-send-amount">$100.00</span>
+        </div>
+        <div class="order-row">
+          <span class="order-label">You Receive</span>
+          <span class="order-value" id="fiat-receive-amount">0.00156 BTC</span>
+        </div>
+        <div class="order-row">
+          <span class="order-label">Order ID</span>
+          <span class="order-value order-id" id="fiat-order-id">abc123...</span>
+        </div>
+      </div>
+      
+      <div class="timer" id="fiat-timer">29:59</div>
+      
+      <div class="payment-info">
+        <div class="payment-icon" id="payment-icon">$</div>
+        <div class="payment-title">Send exactly <span id="exact-amount">$100.00</span> to:</div>
+        <div class="payment-dest" id="payment-dest">$YourCashtag</div>
+      </div>
+      
+      <div class="instructions">
+        <strong>Important:</strong> Send the exact amount shown above. After sending, enter your transaction ID below to confirm payment.
+      </div>
+      
+      <div class="form-group">
+        <label>Payment Transaction ID / Reference</label>
+        <input type="text" id="transaction-id" placeholder="Enter the transaction ID from your payment app">
+      </div>
+      
+      <div class="inline-error hidden" id="payment-error">
+        <span class="error-icon">⚠</span>
+        <span class="error-text" id="payment-error-text">Error message</span>
+      </div>
+      
+      <button class="btn btn-primary" id="confirm-payment-btn" onclick="confirmPayment()">
+        I've Sent the Payment
+      </button>
+    </div>
+    
+    <!-- Crypto Payment Section (for crypto-to-crypto via FixedFloat) -->
+    <div class="card hidden" id="crypto-section">
+      <div class="card-title">Send Your Cryptocurrency</div>
+      
+      <div class="order-summary">
+        <div class="order-row">
+          <span class="order-label">You Send</span>
+          <span class="order-value large" id="crypto-send-amount">0.1 ETH</span>
+        </div>
+        <div class="order-row">
+          <span class="order-label">You Receive</span>
+          <span class="order-value" id="crypto-receive-amount">0.00156 BTC</span>
+        </div>
+        <div class="order-row">
+          <span class="order-label">Order ID</span>
+          <span class="order-value order-id" id="crypto-order-id">abc123...</span>
+        </div>
+      </div>
+      
+      <div class="timer" id="crypto-timer">29:59</div>
+      
+      <div class="payment-info">
+        <div class="payment-title">Send to this address:</div>
+        <div class="crypto-address" id="deposit-address">Loading...</div>
+        <button class="copy-btn" onclick="copyAddress()">📋 Copy Address</button>
+      </div>
+      
+      <div class="instructions">
+        <strong>Important:</strong> Send the exact amount shown. The exchange will process automatically once we receive your transaction.
+      </div>
+    </div>
+    
+    <!-- Payment Submitted State -->
+    <div class="card hidden" id="submitted-section">
+      <div class="status-section">
+        <div class="status-icon">⏳</div>
+        <div class="status-title">Payment Submitted</div>
+        <div class="status-desc">Your payment is being verified. This usually takes 5-30 minutes.</div>
+        <span class="status-badge pending">Pending Verification</span>
+      </div>
+      
+      <div class="order-summary" style="margin-top:30px">
+        <div class="order-row">
+          <span class="order-label">Order ID</span>
+          <span class="order-value order-id" id="submitted-order-id">abc123...</span>
+        </div>
+        <div class="order-row">
+          <span class="order-label">Amount</span>
+          <span class="order-value" id="submitted-amount">$100 → 0.00156 BTC</span>
+        </div>
+        <div class="order-row">
+          <span class="order-label">Status</span>
+          <span class="order-value" id="submitted-status">Awaiting Verification</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Success State -->
+    <div class="card hidden" id="success-section">
+      <div class="status-section">
+        <div class="status-icon">✅</div>
+        <div class="status-title">Exchange Complete!</div>
+        <div class="status-desc">Your cryptocurrency has been sent to your wallet.</div>
+        <span class="status-badge success">Completed</span>
+      </div>
+      
+      <div class="order-summary" style="margin-top:30px">
+        <div class="order-row">
+          <span class="order-label">Sent</span>
+          <span class="order-value" id="success-sent">$100.00</span>
+        </div>
+        <div class="order-row">
+          <span class="order-label">Received</span>
+          <span class="order-value large" id="success-received">0.00156 BTC</span>
+        </div>
+        <div class="order-row">
+          <span class="order-label">TX Hash</span>
+          <span class="order-value" id="success-tx">abc123...</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Error State -->
+    <div class="card hidden" id="error-section">
+      <div class="status-section">
+        <div class="status-icon">❌</div>
+        <div class="status-title">Something Went Wrong</div>
+        <div class="status-desc" id="error-message">An error occurred processing your order.</div>
+        <span class="status-badge error">Error</span>
+      </div>
+    </div>
+    
+    <a href="/" class="back-link">← Back to Exchange</a>
+  </div>
+  
+  <script>
+    let orderData = null;
+    let timerInterval = null;
+    
+    // Get order ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const orderId = urlParams.get('id');
+    
+    async function loadOrder() {
+      if (!orderId) {
+        showError('No order ID provided');
+        return;
+      }
+      
+      try {
+        const res = await fetch(`/api/order/${orderId}`);
+        const result = await res.json();
+        
+        if (result.code !== 0 && result.error) {
+          showError(result.error);
+          return;
+        }
+        
+        orderData = result.data || result;
+        displayOrder();
+        
+      } catch (err) {
+        showError('Failed to load order');
+      }
+    }
+    
+    function displayOrder() {
+      hideAll();
+      
+      const status = orderData.status;
+      
+      if (status === 'completed') {
+        showSuccess();
+      } else if (status === 'error' || status === 'cancelled') {
+        showError(orderData.errorMessage || 'Order was cancelled');
+      } else if (status === 'payment_submitted' || status === 'processing' || status === 'approved') {
+        showSubmitted();
+      } else if (orderData.type === 'fiat-to-crypto') {
+        showFiatPayment();
+      } else {
+        showCryptoPayment();
+      }
+    }
+    
+    function hideAll() {
+      document.getElementById('loading-section').classList.add('hidden');
+      document.getElementById('fiat-section').classList.add('hidden');
+      document.getElementById('crypto-section').classList.add('hidden');
+      document.getElementById('submitted-section').classList.add('hidden');
+      document.getElementById('success-section').classList.add('hidden');
+      document.getElementById('error-section').classList.add('hidden');
+    }
+    
+    function showFiatPayment() {
+      document.getElementById('fiat-section').classList.remove('hidden');
+      updateStep(1);
+      
+      // Populate data
+      document.getElementById('fiat-send-amount').textContent = `$${orderData.fromAmount}`;
+      document.getElementById('fiat-receive-amount').textContent = `${orderData.toAmount} ${orderData.toCcy}`;
+      document.getElementById('fiat-order-id').textContent = orderData.id;
+      document.getElementById('exact-amount').textContent = `$${orderData.fromAmount}`;
+      
+      // Payment method info
+      const payment = orderData.paymentInfo || orderData.payment;
+      if (payment) {
+        const icon = document.getElementById('payment-icon');
+        const dest = document.getElementById('payment-dest');
+        
+        if (payment.type === 'cashapp') {
+          icon.className = 'payment-icon cashapp';
+          icon.textContent = '$';
+        } else if (payment.type === 'zelle') {
+          icon.className = 'payment-icon zelle';
+          icon.textContent = 'Z';
+        } else {
+          icon.className = 'payment-icon paypal';
+          icon.textContent = 'P';
+        }
+        
+        dest.textContent = payment.destination;
+      }
+      
+      // Start timer
+      startTimer('fiat-timer', orderData.expiresAt);
+    }
+    
+    function showCryptoPayment() {
+      document.getElementById('crypto-section').classList.remove('hidden');
+      updateStep(1);
+      
+      // For FixedFloat crypto orders
+      const from = orderData.from || {};
+      const to = orderData.to || {};
+      
+      document.getElementById('crypto-send-amount').textContent = `${from.amount || orderData.fromAmount} ${from.currency || orderData.fromCcy}`;
+      document.getElementById('crypto-receive-amount').textContent = `${to.amount || orderData.toAmount} ${to.currency || orderData.toCcy}`;
+      document.getElementById('crypto-order-id').textContent = orderData.id;
+      document.getElementById('deposit-address').textContent = from.address || 'Address will appear shortly';
+      
+      if (orderData.time && orderData.time.expiration) {
+        startTimer('crypto-timer', new Date(orderData.time.expiration * 1000).toISOString());
+      }
+    }
+    
+    function showSubmitted() {
+      document.getElementById('submitted-section').classList.remove('hidden');
+      updateStep(2);
+      
+      document.getElementById('submitted-order-id').textContent = orderData.id;
+      document.getElementById('submitted-amount').textContent = `$${orderData.fromAmount} → ${orderData.toAmount} ${orderData.toCcy}`;
+      document.getElementById('submitted-status').textContent = orderData.status.replace('_', ' ');
+      
+      // Poll for updates
+      setTimeout(loadOrder, 10000);
+    }
+    
+    function showSuccess() {
+      document.getElementById('success-section').classList.remove('hidden');
+      updateStep(3);
+      
+      document.getElementById('success-sent').textContent = orderData.type === 'fiat-to-crypto' 
+        ? `$${orderData.fromAmount}`
+        : `${orderData.fromAmount} ${orderData.fromCcy}`;
+      document.getElementById('success-received').textContent = `${orderData.toAmount} ${orderData.toCcy}`;
+      document.getElementById('success-tx').textContent = orderData.txHash || orderData.id.slice(0, 16) + '...';
+    }
+    
+    function showError(message) {
+      hideAll();
+      document.getElementById('error-section').classList.remove('hidden');
+      document.getElementById('error-message').textContent = message;
+    }
+    
+    function updateStep(current) {
+      for (let i = 1; i <= 3; i++) {
+        const step = document.getElementById(`step${i}`);
+        step.classList.remove('active', 'completed');
+        if (i < current) step.classList.add('completed');
+        else if (i === current) step.classList.add('active');
+      }
+    }
+    
+    function startTimer(elementId, expiresAt) {
+      if (timerInterval) clearInterval(timerInterval);
+      
+      const element = document.getElementById(elementId);
+      const expiry = new Date(expiresAt).getTime();
+      
+      timerInterval = setInterval(() => {
+        const now = Date.now();
+        const diff = expiry - now;
+        
+        if (diff <= 0) {
+          clearInterval(timerInterval);
+          element.textContent = 'Expired';
+          element.style.color = 'var(--error)';
+          return;
+        }
+        
+        const mins = Math.floor(diff / 60000);
+        const secs = Math.floor((diff % 60000) / 1000);
+        element.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+      }, 1000);
+    }
+    
+    async function confirmPayment() {
+      const transactionId = document.getElementById('transaction-id').value.trim();
+      const errorEl = document.getElementById('payment-error');
+      const errorText = document.getElementById('payment-error-text');
+      
+      // Hide previous error
+      errorEl.classList.add('hidden');
+      
+      if (!transactionId) {
+        errorText.textContent = 'Please enter your payment transaction ID';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+      
+      const btn = document.getElementById('confirm-payment-btn');
+      btn.disabled = true;
+      btn.textContent = 'Confirming...';
+      
+      try {
+        const res = await fetch(`/api/order/${orderId}/confirm-payment`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ transactionId })
+        });
+        
+        const result = await res.json();
+        
+        if (result.code === 0 || result.data) {
+          orderData = result.data;
+          displayOrder();
+        } else {
+          errorText.textContent = result.error || 'Failed to confirm payment';
+          errorEl.classList.remove('hidden');
+          btn.disabled = false;
+          btn.textContent = "I've Sent the Payment";
+        }
+      } catch (err) {
+        errorText.textContent = 'Connection error. Please try again.';
+        errorEl.classList.remove('hidden');
+        btn.disabled = false;
+        btn.textContent = "I've Sent the Payment";
+      }
+    }
+    
+    function copyAddress() {
+      const address = document.getElementById('deposit-address').textContent;
+      navigator.clipboard.writeText(address).then(() => {
+        // Show brief "Copied!" feedback on button
+        const btn = event.target;
+        const originalText = btn.textContent;
+        btn.textContent = '✓ Copied!';
+        setTimeout(() => { btn.textContent = originalText; }, 2000);
+      });
+    }
+    
+    // Initialize
+    loadOrder();
+  </script>
+</body>
+</html>

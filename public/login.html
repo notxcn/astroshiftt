@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log In - AstroShift</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><defs><radialGradient id=%22grad%22 cx=%2230%25%22 cy=%2230%25%22 r=%2270%25%22><stop offset=%220%25%22 stop-color=%22%2300d4ff%22/><stop offset=%22100%25%22 stop-color=%22%234f7eff%22/></radialGradient></defs><circle cx=%2250%22 cy=%2250%22 r=%2240%22 fill=%22url(%23grad)%22 stroke=%22white%22 stroke-width=%222%22/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0a0b14;
+      --bg-card: #12131f;
+      --border-color: rgba(255,255,255,0.08);
+      --text-primary: #ffffff;
+      --text-secondary: #a0a0b0;
+      --primary: #4f7eff;
+      --primary-glow: rgba(79, 126, 255, 0.3);
+      --accent-green: #00d4aa;
+      --accent-red: #ff6b7a;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Stars Background */
+    .stars {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      z-index: 0;
+      background: 
+        radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,0.3), transparent),
+        radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.2), transparent),
+        radial-gradient(1px 1px at 90px 40px, rgba(255,255,255,0.4), transparent),
+        radial-gradient(2px 2px at 130px 80px, rgba(255,255,255,0.2), transparent),
+        radial-gradient(1px 1px at 160px 120px, rgba(255,255,255,0.3), transparent);
+      background-size: 200px 200px;
+      animation: twinkle 5s ease-in-out infinite;
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    /* Header */
+    header {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 50px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: white;
+      text-decoration: none;
+    }
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: radial-gradient(circle at 30% 30%, #00d4ff, #4f7eff);
+      border-radius: 50%;
+      position: relative;
+      box-shadow: 0 0 15px rgba(79, 126, 255, 0.6);
+    }
+    .logo-icon::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 140%;
+      height: 40%;
+      border: 2px solid rgba(255,255,255,0.6);
+      border-radius: 50%;
+      transform: translate(-50%, -50%) rotate(-30deg);
+    }
+    nav {
+      display: flex;
+      gap: 30px;
+    }
+    nav a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+    nav a:hover {
+      color: white;
+    }
+
+    /* Main Content */
+    main {
+      position: relative;
+      z-index: 1;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .login-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 40px;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .login-header h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .login-header p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
+    /* Form Steps */
+    .step {
+      display: none;
+    }
+    .step.active {
+      display: block;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+    .form-input {
+      width: 100%;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-size: 1rem;
+      color: white;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    .form-input::placeholder {
+      color: var(--text-secondary);
+    }
+
+    /* Code Input */
+    .code-inputs {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+    .code-input {
+      width: 50px;
+      height: 60px;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-align: center;
+      color: white;
+      font-family: monospace;
+    }
+    .code-input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .submit-btn {
+      width: 100%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 14px 28px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .submit-btn:hover {
+      background: #3a6aee;
+    }
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Message */
+    .message {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+      display: none;
+    }
+    .message.error {
+      background: rgba(255, 71, 87, 0.1);
+      border: 1px solid rgba(255, 71, 87, 0.3);
+      color: var(--accent-red);
+      display: block;
+    }
+    .message.success {
+      background: rgba(0, 212, 170, 0.1);
+      border: 1px solid rgba(0, 212, 170, 0.3);
+      color: var(--accent-green);
+      display: block;
+    }
+
+    /* Resend link */
+    .resend-wrap {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .resend-wrap a {
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+    .resend-wrap a:hover {
+      text-decoration: underline;
+    }
+    .resend-wrap a.disabled {
+      color: var(--text-secondary);
+      pointer-events: none;
+    }
+
+    /* Back link */
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 25px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+    .back-link:hover {
+      color: white;
+    }
+
+    /* Email display */
+    .email-display {
+      background: rgba(79, 126, 255, 0.1);
+      border: 1px solid rgba(79, 126, 255, 0.2);
+      border-radius: 8px;
+      padding: 12px 16px;
+      text-align: center;
+      margin-bottom: 25px;
+      font-weight: 500;
+    }
+
+    /* Footer */
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 20px;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+    }
+    footer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    @media (max-width: 768px) {
+      header { padding: 15px 20px; }
+      nav { display: none; }
+      .login-card { padding: 30px 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="stars"></div>
+
+  <header>
+    <a href="/" class="logo">
+      <div class="logo-icon"></div>
+      AstroShift
+    </a>
+    <nav>
+      <a href="/">Exchange</a>
+      <a href="/track.html">Track Order</a>
+      <a href="/faq.html">FAQ</a>
+      <a href="/support.html">Support</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="login-card">
+      <!-- Step 1: Email Input -->
+      <div class="step active" id="step1">
+        <div class="login-header">
+          <h1>Log In</h1>
+          <p>Enter your email to receive a verification code</p>
+        </div>
+
+        <div class="message" id="message1"></div>
+
+        <form id="emailForm" onsubmit="sendCode(event)">
+          <div class="form-group">
+            <label for="email">Email address</label>
+            <input type="email" id="email" class="form-input" placeholder="your@email.com" required>
+          </div>
+          <button type="submit" class="submit-btn" id="sendBtn">Send Code</button>
+        </form>
+
+        <a href="/" class="back-link">← Back to Exchange</a>
+      </div>
+
+      <!-- Step 2: Code Verification -->
+      <div class="step" id="step2">
+        <div class="login-header">
+          <h1>Enter Code</h1>
+          <p>We sent a 6-digit code to your email</p>
+        </div>
+
+        <div class="email-display" id="emailDisplay">-</div>
+
+        <div class="message" id="message2"></div>
+
+        <form id="codeForm" onsubmit="verifyCode(event)">
+          <div class="form-group">
+            <div class="code-inputs">
+              <input type="text" class="code-input" maxlength="1" data-index="0">
+              <input type="text" class="code-input" maxlength="1" data-index="1">
+              <input type="text" class="code-input" maxlength="1" data-index="2">
+              <input type="text" class="code-input" maxlength="1" data-index="3">
+              <input type="text" class="code-input" maxlength="1" data-index="4">
+              <input type="text" class="code-input" maxlength="1" data-index="5">
+            </div>
+          </div>
+          <button type="submit" class="submit-btn" id="verifyBtn">Verify</button>
+        </form>
+
+        <div class="resend-wrap">
+          <a href="#" id="resendLink" onclick="resendCode(event)">Resend code</a>
+          <span id="resendTimer"></span>
+        </div>
+
+        <a href="#" class="back-link" onclick="goBack(event)">← Use different email</a>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>Need help? <a href="/support.html">Contact Support</a></p>
+  </footer>
+
+  <script>
+    let userEmail = '';
+    let resendCooldown = 0;
+
+    // Code input auto-focus
+    const codeInputs = document.querySelectorAll('.code-input');
+    codeInputs.forEach((input, index) => {
+      input.addEventListener('input', (e) => {
+        const value = e.target.value;
+        if (value && index < codeInputs.length - 1) {
+          codeInputs[index + 1].focus();
+        }
+        // Auto-submit when all filled
+        if (getCode().length === 6) {
+          verifyCode(new Event('submit'));
+        }
+      });
+      
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && !e.target.value && index > 0) {
+          codeInputs[index - 1].focus();
+        }
+      });
+
+      // Allow paste
+      input.addEventListener('paste', (e) => {
+        e.preventDefault();
+        const paste = (e.clipboardData || window.clipboardData).getData('text');
+        const digits = paste.replace(/\D/g, '').split('').slice(0, 6);
+        digits.forEach((digit, i) => {
+          if (codeInputs[i]) codeInputs[i].value = digit;
+        });
+        if (digits.length === 6) {
+          verifyCode(new Event('submit'));
+        }
+      });
+    });
+
+    function getCode() {
+      return Array.from(codeInputs).map(i => i.value).join('');
+    }
+
+    async function sendCode(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('email').value.trim();
+      const message = document.getElementById('message1');
+      const btn = document.getElementById('sendBtn');
+
+      if (!email) {
+        message.className = 'message error';
+        message.textContent = 'Please enter your email';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+      message.className = 'message';
+
+      try {
+        const res = await fetch('/api/auth/send-code', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        
+        const data = await res.json();
+
+        if (data.success) {
+          userEmail = email;
+          document.getElementById('emailDisplay').textContent = email;
+          document.getElementById('step1').classList.remove('active');
+          document.getElementById('step2').classList.add('active');
+          startResendCooldown();
+          codeInputs[0].focus();
+        } else {
+          message.className = 'message error';
+          message.textContent = data.error || 'Failed to send code. Please try again.';
+        }
+      } catch (error) {
+        console.error('Send code error:', error);
+        message.className = 'message error';
+        message.textContent = 'Connection error. Please try again.';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Send Code';
+      }
+    }
+
+    async function verifyCode(e) {
+      e.preventDefault();
+
+      const code = getCode();
+      const message = document.getElementById('message2');
+      const btn = document.getElementById('verifyBtn');
+
+      if (code.length !== 6) {
+        message.className = 'message error';
+        message.textContent = 'Please enter the 6-digit code';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Verifying...';
+      message.className = 'message';
+
+      try {
+        const res = await fetch('/api/auth/verify-code', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: userEmail, code })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          // Store auth token with consistent keys
+          localStorage.setItem('astroshift_token', data.token);
+          localStorage.setItem('astroshift_email', userEmail);
+          
+          // Redirect to orders page or specified redirect
+          const redirect = new URLSearchParams(window.location.search).get('redirect') || '/orders.html';
+          window.location.href = redirect;
+        } else {
+          message.className = 'message error';
+          message.textContent = data.error || 'Invalid code. Please try again.';
+          // Clear inputs
+          codeInputs.forEach(i => i.value = '');
+          codeInputs[0].focus();
+        }
+      } catch (error) {
+        console.error('Verify error:', error);
+        message.className = 'message error';
+        message.textContent = 'Connection error. Please try again.';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Verify';
+      }
+    }
+
+    function resendCode(e) {
+      e.preventDefault();
+      if (resendCooldown > 0) return;
+      
+      // Use the email form submission
+      document.getElementById('email').value = userEmail;
+      sendCode(new Event('submit'));
+    }
+
+    function startResendCooldown() {
+      resendCooldown = 60;
+      const link = document.getElementById('resendLink');
+      const timer = document.getElementById('resendTimer');
+      
+      const interval = setInterval(() => {
+        resendCooldown--;
+        if (resendCooldown > 0) {
+          link.classList.add('disabled');
+          timer.textContent = ` (${resendCooldown}s)`;
+        } else {
+          link.classList.remove('disabled');
+          timer.textContent = '';
+          clearInterval(interval);
+        }
+      }, 1000);
+    }
+
+    function goBack(e) {
+      e.preventDefault();
+      document.getElementById('step2').classList.remove('active');
+      document.getElementById('step1').classList.add('active');
+      codeInputs.forEach(i => i.value = '');
+      document.getElementById('message2').className = 'message';
+    }
+
+    // Check if already logged in
+    if (localStorage.getItem('astroshift_token')) {
+      const redirect = new URLSearchParams(window.location.search).get('redirect') || '/orders.html';
+      window.location.href = redirect;
+    }
+  </script>
+</body>
+</html>

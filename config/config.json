@@ -1,0 +1,37 @@
+{
+  "admin": {
+    "username": "admin",
+    "passwordHash": "$2a$10$KGoAxNx6srOPS.tpDLBhduwK4Z72qb3IwKEp9OfmeSLPepFuLgGZu",
+    "secretPath": "ctrl-panel-x7k9m2"
+  },
+  "fixedFloat": {
+    "apiKey": "YOUR_FF_API_KEY",
+    "apiSecret": "YOUR_FF_API_SECRET",
+    "baseUrl": "https://ff.io/api/v2"
+  },
+  "fees": {
+    "astroShiftMarkup": 1,
+    "fiatProcessingFee": 5.5
+  },
+  "paymentMethods": {
+    "cashapp": {
+      "enabled": false,
+      "cashtag": "",
+      "displayName": "Cash App"
+    },
+    "zelle": {
+      "enabled": false,
+      "email": "",
+      "displayName": "Zelle"
+    },
+    "paypal": {
+      "enabled": false,
+      "email": "",
+      "displayName": "PayPal"
+    }
+  },
+  "session": {
+    "secret": "change-this-to-random-string-in-production",
+    "maxAge": 86400000
+  }
+}

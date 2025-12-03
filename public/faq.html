@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FAQ - AstroShift</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><defs><radialGradient id=%22grad%22 cx=%2230%25%22 cy=%2230%25%22 r=%2270%25%22><stop offset=%220%25%22 stop-color=%22%2300d4ff%22/><stop offset=%22100%25%22 stop-color=%22%234f7eff%22/></radialGradient></defs><circle cx=%2250%22 cy=%2250%22 r=%2240%22 fill=%22url(%23grad)%22 stroke=%22white%22 stroke-width=%222%22/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0a0b14;
+      --bg-card: #12131f;
+      --border-color: rgba(255,255,255,0.08);
+      --text-primary: #ffffff;
+      --text-secondary: #a0a0b0;
+      --primary: #4f7eff;
+      --primary-glow: rgba(79, 126, 255, 0.3);
+      --accent-green: #00d4aa;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* Stars Background */
+    .stars {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      z-index: 0;
+      background: 
+        radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,0.3), transparent),
+        radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.2), transparent),
+        radial-gradient(1px 1px at 90px 40px, rgba(255,255,255,0.4), transparent),
+        radial-gradient(2px 2px at 130px 80px, rgba(255,255,255,0.2), transparent),
+        radial-gradient(1px 1px at 160px 120px, rgba(255,255,255,0.3), transparent);
+      background-size: 200px 200px;
+      animation: twinkle 5s ease-in-out infinite;
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    /* Header */
+    header {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 50px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: white;
+      text-decoration: none;
+    }
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: radial-gradient(circle at 30% 30%, #00d4ff, #4f7eff);
+      border-radius: 50%;
+      position: relative;
+      box-shadow: 0 0 15px rgba(79, 126, 255, 0.6);
+    }
+    .logo-icon::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 140%;
+      height: 40%;
+      border: 2px solid rgba(255,255,255,0.6);
+      border-radius: 50%;
+      transform: translate(-50%, -50%) rotate(-30deg);
+    }
+    nav {
+      display: flex;
+      gap: 30px;
+    }
+    nav a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+    nav a:hover, nav a.active {
+      color: white;
+    }
+    .btn-login {
+      background: rgba(255,255,255,0.1);
+      color: white;
+      padding: 10px 24px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .btn-login:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    /* Main Content */
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 60px 20px;
+    }
+
+    h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 40px;
+      background: linear-gradient(135deg, #fff, #4f7eff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Tab Navigation */
+    .tab-nav {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+    .tab-btn:hover {
+      border-color: var(--primary);
+      color: white;
+    }
+    .tab-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+
+    /* Tab Content */
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+
+    /* FAQ Items */
+    .faq-list {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .faq-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .faq-header {
+      display: flex;
+      align-items: center;
+      padding: 20px 25px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .faq-header:hover {
+      background: rgba(255,255,255,0.02);
+    }
+    .faq-number {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      width: 50px;
+      flex-shrink: 0;
+    }
+    .faq-question {
+      flex: 1;
+      font-size: 1.05rem;
+      font-weight: 500;
+    }
+    .faq-toggle {
+      width: 30px;
+      height: 30px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: white;
+      transition: transform 0.3s;
+    }
+    .faq-item.active .faq-toggle {
+      transform: rotate(45deg);
+    }
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+    }
+    .faq-answer-inner {
+      padding: 0 25px 20px 75px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+    .faq-answer-inner p {
+      margin-bottom: 10px;
+    }
+    .faq-answer-inner ul {
+      margin-left: 20px;
+      margin-bottom: 10px;
+    }
+    .faq-answer-inner li {
+      margin-bottom: 5px;
+    }
+    .faq-answer-inner strong {
+      color: var(--text-primary);
+    }
+
+    /* Footer */
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 40px 20px;
+      border-top: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+    footer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    @media (max-width: 768px) {
+      header { padding: 15px 20px; }
+      nav { display: none; }
+      h1 { font-size: 2rem; }
+      .faq-answer-inner { padding-left: 25px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="stars"></div>
+
+  <header>
+    <a href="/" class="logo">
+      <div class="logo-icon"></div>
+      AstroShift
+    </a>
+    <nav>
+      <a href="/">Exchange</a>
+      <a href="/track.html">Track Order</a>
+      <a href="/faq.html" class="active">FAQ</a>
+      <a href="/support.html">Support</a>
+    </nav>
+    <a href="/login.html" class="btn-login">Log In</a>
+  </header>
+
+  <main>
+    <h1>FAQ</h1>
+
+    <div class="tab-nav">
+      <button class="tab-btn active" data-tab="about">About AstroShift</button>
+      <button class="tab-btn" data-tab="exchange">About Exchange</button>
+      <button class="tab-btn" data-tab="orders">About Orders</button>
+      <button class="tab-btn" data-tab="payments">About Payments</button>
+    </div>
+
+    <!-- About AstroShift -->
+    <div class="tab-content active" id="tab-about">
+      <div class="faq-list">
+        <div class="faq-item">
+          <div class="faq-header">
+            <span class="faq-number">1</span>
+            <span class="faq-question">What is AstroShift?</span>
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>AstroShift is a lightning-fast cryptocurrency exchange platform that allows you to:</p>
+              <ul>
+                <li>Exchange one cryptocurrency for another instantly</li>
+                <li>Buy crypto using Cash App, Zelle, or PayPal</li>
+                <li>Get the best rates with transparent fees</li>
+              </ul>
+              <p>We're designed to make crypto accessible to everyone, whether you're a seasoned trader or just getting started.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-header">
+            <span class="faq-number">2</span>
+            <span class="faq-question">Why should I choose AstroShift?</span>
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p><strong>Simple & Fast:</strong> No complicated sign-ups or lengthy verification processes. Start exchanging in seconds.</p>
+              <p><strong>Multiple Payment Options:</strong> We accept Cash App, Zelle, and PayPal for fiat-to-crypto purchases.</p>
+              <p><strong>Transparent Fees:</strong> Our fees are clearly displayed before you confirm any exchange. No hidden charges.</p>
+              <p><strong>24/7 Support:</strong> Our team is available around the clock to help with any questions.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-header">
+            <span class="faq-number">3</span>
+            <span class="faq-question">Is AstroShift safe to use?</span>
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Yes! Security is our top priority:</p>
+              <ul>
+                <li><strong>No custody:</strong> We don't hold your funds. Crypto is sent directly to your wallet.</li>
+                <li><strong>Encrypted connections:</strong> All data is transmitted over secure HTTPS connections.</li>
+                <li><strong>Instant processing:</strong> Funds aren't stored on our platform, minimizing risk.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-header">
+            <span class="faq-number">4</span>
+            <span class="faq-question">Do I need to create an account?</span>
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>No account is required to make an exchange! Simply:</p>
+              <ul>
+                <li>Select your currencies</li>
+                <li>Enter your wallet address</li>
+                <li>Complete the exchange</li>
+              </ul>
+              <p>However, if you'd like to track your orders and receive email notifications, you can optionally sign up with just your email address.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- About Exchange -->
+    <div class="tab-content" id="tab-exchange">
+      <div class="faq-list">
+        <div class="faq-item">
+          <div class="faq-header">
+            <span class="faq-number">1</span>
+            <span class="faq-question">What is the difference between fixed and float rates?</span>
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p><strong>Fixed Rate (1.0% fee):</strong></p>
+              <ul>
+                <li>The rate you see is the rate you get</li>
+                <li>Protected from market volatility during the exchange</li>
+                <li>Best for larger transactions or volatile markets</li>
+              </ul>
+              <p><strong>Float Rate (0.5% fee):</strong></p>
+              <ul>
+                <li>Lower fee but rate may change slightly</li>
+                <li>Final amount determined when your transaction confirms</li>
+                <li>Could be higher or lower depending on market movement</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-header">
+            <span class="faq-number">2</span>
+            <span class="faq-question">What are AstroShift's fees?</span>
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p><strong>Crypto-to-Crypto:</strong></p>
+              <ul>
+                <li>Fixed rate: 1.0%</li>
+                <li>Float rate: 0.5%</li>
+              </ul>
+              <p><strong>Fiat-to-Crypto (Cash App, Zelle, PayPal):</strong></p>
+              <ul>
+                <li>Exchange fee: 1.0%</li>
+                <li>Fiat processing fee: 5.5%</li>
+                <li>Total: 6.5%</li>
+              </ul>
+              <p>All fees are clearly displayed before you confirm your exchange.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-header">
+            <span class="faq-number">3</span>
+            <span class="faq-question">How long does an exchange take?</span>
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p><strong>Crypto-to-Crypto:</strong> Usually 5-30 minutes, depending on:</p>
+              <ul>
+                <li>Network congestion</li>
+                <li>Number of confirmations required</li>
+                <li>The specific cryptocurrencies involved</li>
+              </ul>
+              <p><strong>Fiat-to-Crypto:</strong> After your payment is verified (usually within 5-15 minutes), the crypto exchange typically completes within 10-30 minutes.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-header">
+            <span class="faq-number">4</span>
+            <span class="faq-question">Is there a minimum or maximum exchange amount?</span>
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p><strong>Minimum amounts:</strong></p>
+              <ul>
+                <li>Fiat purchases: $5.00 minimum</li>
+                <li>Crypto exchanges: Varies by currency (shown during exchange)</li>
+              </ul>
+              <p><strong>Maximum amounts:</strong></p>
+              <ul>
+                <li>Standard exchanges have no maximum</li>
+                <li>For very large amounts, contact support for the best rates</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-header">
+            <span class="faq-number">5</span>
+            <span class="faq-question">Why is my wallet address recognized as invalid?</span>
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>This usually happens because:</p>
+              <ul>
+                <li><strong>Wrong network:</strong> Make sure you're using the correct address format for the cryptocurrency you're receiving</li>
+                <li><strong>Copy/paste error:</strong> Double-check that you copied the entire address without extra spaces</li>
+                <li><strong>Incompatible address:</strong> Some exchanges generate addresses that aren't compatible with direct transfers</li>
+              </ul>
+              <p>If you're sure your address is correct, please contact our support team.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- About Orders -->
+    <div class="tab-content" id="tab-orders">
+      <div class="faq-list">
+        <div class="faq-item">
+          <div class="faq-header">
+            <span class="faq-number">1</span>
+            <span class="faq-question">How can I track my order?</span>
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>There are several ways to track your order:</p>
+              <ul>
+                <li><strong>Order page:</strong> After creating an exchange, you'll be taken to an order status page. Bookmark this page!</li>
+                <li><strong>Track Order:</strong> Use the "Track Order" link in the navigation and enter your Order ID</li>
+                <li><strong>Email notifications:</strong> If you provided your email, you'll receive updates on your order status</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-header">
+            <span class="faq-number">2</span>
+            <span class="faq-question">What should I do if my order expired?</span>
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>If your order expired before you sent the funds:</p>
+              <ul>
+                <li>Simply create a new order with the same details</li>
+                <li>The rate may have changed since your original order</li>
+              </ul>
+              <p>If you sent funds to an expired order:</p>
+              <ul>
+                <li>Contact our support team immediately with your Order ID</li>
+                <li>We'll help recover your funds or complete the exchange manually</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-header">
+            <span class="faq-number">3</span>
+            <span class="faq-question">I accidentally closed the page. What should I do?</span>
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Don't worry! Your order is still processing. Here's what to do:</p>
+              <ul>
+                <li>Check your email for the order confirmation (if you provided one)</li>
+                <li>Go to "Track Order" and enter your Order ID</li>
+                <li>Check your browser history for the order page URL</li>
+              </ul>
+              <p>If you can't find your Order ID, contact support with your wallet address and approximate time of the transaction.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-header">
+            <span class="faq-number">4</span>
+            <span class="faq-question">Why is my order taking so long?</span>
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Exchange times can vary due to:</p>
+              <ul>
+                <li><strong>Network congestion:</strong> High traffic on blockchain networks can slow confirmations</li>
+                <li><strong>Low transaction fees:</strong> If you sent crypto with a low fee, it may take longer to confirm</li>
+                <li><strong>Required confirmations:</strong> Some currencies require more confirmations for security</li>
+              </ul>
+              <p>Most exchanges complete within 30 minutes. If it's been longer, please contact support.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- About Payments -->
+    <div class="tab-content" id="tab-payments">
+      <div class="faq-list">
+        <div class="faq-item">
+          <div class="faq-header">
+            <span class="faq-number">1</span>
+            <span class="faq-question">How do Cash App payments work?</span>
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>After creating your order:</p>
+              <ul>
+                <li>You'll see our Cash App $cashtag</li>
+                <li>Open your Cash App and send the exact amount shown</li>
+                <li>Enter the Cash App transaction ID on our site</li>
+                <li>We verify the payment and send your crypto</li>
+              </ul>
+              <p><strong>Important:</strong> Send the exact amount shown. Sending more or less may delay your order.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-header">
+            <span class="faq-number">2</span>
+            <span class="faq-question">How do Zelle payments work?</span>
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>After creating your order:</p>
+              <ul>
+                <li>You'll see our Zelle email address</li>
+                <li>Send the exact amount via your bank's Zelle feature</li>
+                <li>Enter the Zelle confirmation number on our site</li>
+                <li>We verify the payment and send your crypto</li>
+              </ul>
+              <p><strong>Note:</strong> Zelle payments are usually instant, but verification may take a few minutes.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-header">
+            <span class="faq-number">3</span>
+            <span class="faq-question">How do PayPal payments work?</span>
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>After creating your order:</p>
+              <ul>
+                <li>You'll see our PayPal email address</li>
+                <li>Send the exact amount as "Friends & Family"</li>
+                <li>Enter the PayPal transaction ID on our site</li>
+                <li>We verify the payment and send your crypto</li>
+              </ul>
+              <p><strong>Important:</strong> Always send as "Friends & Family" to avoid delays. "Goods & Services" payments may be refunded.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-header">
+            <span class="faq-number">4</span>
+            <span class="faq-question">Why is there a $5 minimum for fiat payments?</span>
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>The $5 minimum exists because:</p>
+              <ul>
+                <li>Payment processing has fixed costs regardless of amount</li>
+                <li>Blockchain transaction fees make small amounts impractical</li>
+                <li>It ensures you receive a meaningful amount of crypto</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-header">
+            <span class="faq-number">5</span>
+            <span class="faq-question">What if I sent the wrong amount?</span>
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p><strong>If you sent less:</strong> Contact support. We can either refund you or adjust your order.</p>
+              <p><strong>If you sent more:</strong> Contact support. We'll either send the extra crypto or refund the difference.</p>
+              <p>Always contact us with your Order ID for the fastest resolution.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2024 AstroShift. All rights reserved. | <a href="/support.html">Contact Support</a></p>
+  </footer>
+
+  <script>
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Update button states
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        // Update content
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    // FAQ accordion
+    document.querySelectorAll('.faq-header').forEach(header => {
+      header.addEventListener('click', () => {
+        const item = header.parentElement;
+        const answer = item.querySelector('.faq-answer');
+        const isActive = item.classList.contains('active');
+        
+        // Close all others in this tab
+        item.parentElement.querySelectorAll('.faq-item').forEach(i => {
+          i.classList.remove('active');
+          i.querySelector('.faq-answer').style.maxHeight = null;
+        });
+        
+        // Open clicked one
+        if (!isActive) {
+          item.classList.add('active');
+          answer.style.maxHeight = answer.scrollHeight + 'px';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

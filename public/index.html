@@ -1,0 +1,1999 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>AstroShift.io | Lightning Fast Exchange</title>
+
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><defs><radialGradient id=%22grad%22 cx=%2230%25%22 cy=%2230%25%22 r=%2270%25%22><stop offset=%220%25%22 stop-color=%22%2300d4ff%22/><stop offset=%22100%25%22 stop-color=%22%234f7eff%22/></radialGradient></defs><circle cx=%2250%22 cy=%2250%22 r=%2240%22 fill=%22url(%23grad)%22 stroke=%22white%22 stroke-width=%222%22/></svg>">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* --- CSS VARIABLES & RESET --- */
+    :root {
+      --bg-dark: #050511;
+      --bg-panel: rgba(30, 32, 60, 0.6);
+      --bg-panel-hover: rgba(40, 42, 80, 0.8);
+      --primary: #4f7eff;
+      --primary-glow: rgba(79, 126, 255, 0.5);
+      --accent-cyan: #00d4ff;
+      --text-main: #ffffff;
+      --text-muted: #8b90b5;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --input-bg: rgba(0, 0, 0, 0.25);
+
+      --rad-sm: 12px;
+      --rad-md: 18px;
+      --rad-lg: 24px;
+      --rad-pill: 9999px;
+
+      --ease: cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* --- SOLID PLANETS --- */
+    .bg-stars {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url("data:image/svg+xml,%3Csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='stars' width='200' height='200' patternUnits='userSpaceOnUse'%3E%3Ccircle cx='10' cy='10' r='1' fill='rgba(255,255,255,0.15)'/%3E%3Ccircle cx='50' cy='80' r='0.5' fill='rgba(255,255,255,0.1)'/%3E%3Ccircle cx='150' cy='40' r='1.2' fill='rgba(255,255,255,0.2)'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23stars)'/%3E%3C/svg%3E");
+      z-index: -5;
+      pointer-events: none;
+    }
+
+    .planet-1 {
+      position: absolute;
+      bottom: -100px;
+      left: -100px;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle at 30% 30%, #4338ca, #1e1b4b);
+      border-radius: 50%;
+      z-index: -4;
+      box-shadow: 0 0 60px rgba(67, 56, 202, 0.4);
+    }
+
+    .planet-1::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 50%;
+      transform: rotate(-20deg) scaleX(0.9);
+    }
+
+    .planet-2 {
+      position: absolute;
+      top: 15%;
+      right: -100px;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle at 30% 30%, #3b82f6, #172554);
+      border-radius: 50%;
+      z-index: -4;
+      box-shadow: inset -20px -20px 50px rgba(0, 0, 0, 0.8);
+    }
+
+    .planet-2::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 150%;
+      height: 40%;
+      border: 15px solid rgba(59, 130, 246, 0.8);
+      border-radius: 50%;
+      transform: translate(-50%, -50%) rotate(-25deg);
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+      z-index: -1;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+      transition: color 0.2s;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    button {
+      border: none;
+      background: none;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    /* --- LAYOUT UTILS --- */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* --- HEADER --- */
+    .site-header {
+      padding: 20px 0;
+      position: absolute;
+      top: 0;
+      width: 100%;
+      z-index: 50;
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-weight: 800;
+      font-size: 1.5rem;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-icon {
+      width: 38px;
+      height: 38px;
+      background: radial-gradient(circle at 30% 30%, #00d4ff, #4f7eff);
+      border-radius: 50%;
+      position: relative;
+      box-shadow: 0 0 15px rgba(79, 126, 255, 0.6);
+    }
+
+    .logo-icon::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 140%;
+      height: 40%;
+      border: 2px solid rgba(255, 255, 255, 0.6);
+      border-radius: 50%;
+      transform: translate(-50%, -50%) rotate(-30deg);
+    }
+
+    .main-nav {
+      display: flex;
+      gap: 30px;
+    }
+
+    .main-nav a {
+      font-weight: 500;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    .main-nav a:hover {
+      color: var(--text-main);
+    }
+
+    .btn-small {
+      padding: 10px 20px;
+      border-radius: var(--rad-pill);
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+    }
+
+    .btn-small:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    /* --- HERO SECTION --- */
+    .hero {
+      padding-top: 110px;
+      padding-bottom: 20px;
+      text-align: center;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .hero-title-wrap {
+      max-width: 900px;
+      margin-bottom: 40px;
+      position: relative;
+    }
+
+    .hero h1 {
+      font-size: clamp(3rem, 6vw, 4.5rem);
+      line-height: 1.1;
+      font-weight: 800;
+      margin: 0;
+      background: linear-gradient(to bottom, #ffffff, #a5b4fc);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.03em;
+      text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    /* --- EXCHANGE WIDGET --- */
+    .exchange-widget {
+      width: 100%;
+      max-width: 880px;
+      background: rgba(18, 20, 35, 0.75);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border: 1px solid var(--border-color);
+      border-radius: var(--rad-lg);
+      padding: 30px;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+      position: relative;
+      z-index: 10;
+      margin-bottom: 0;
+    }
+
+    .swap-grid {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 15px;
+      align-items: stretch;
+      margin-bottom: 20px;
+    }
+
+    .input-group {
+      background: var(--bg-panel);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: var(--rad-md);
+      padding: 20px;
+      transition: all 0.2s var(--ease);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .input-group:hover {
+      background: var(--bg-panel-hover);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .input-group:focus-within {
+      background: var(--bg-panel-hover);
+      border-color: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.05);
+    }
+
+    .input-top-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .input-main {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .amount-input {
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 1.8rem;
+      font-weight: 600;
+      width: 100%;
+      font-family: 'Inter', sans-serif;
+      padding: 0;
+    }
+
+    .amount-input::placeholder {
+      color: rgba(255, 255, 255, 0.2);
+    }
+
+    .asset-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 8px 16px 8px 10px;
+      border-radius: var(--rad-pill);
+      cursor: pointer;
+      transition: all 0.2s;
+      flex-shrink: 0;
+      margin-left: 15px;
+      border: 1px solid transparent;
+    }
+
+    .asset-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .asset-icon-img {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .asset-info {
+      text-align: left;
+      line-height: 1.1;
+    }
+
+    .asset-symbol {
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .chevron {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-left: 5px;
+    }
+
+    .rate-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .rate-subtext {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .fiat-subtext {
+      font-size: 0.85rem;
+      color: var(--accent-cyan);
+      font-weight: 500;
+      background: rgba(0, 212, 255, 0.1);
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
+    .swap-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 1.4rem;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .swap-arrow:hover {
+      color: var(--primary);
+      transform: rotate(180deg) scale(1.1);
+    }
+
+    .dest-group {
+      margin-bottom: 25px;
+    }
+
+    .dest-input-container {
+      background: var(--input-bg);
+      border-radius: var(--rad-md);
+      display: flex;
+      align-items: center;
+      padding: 10px 10px 10px 20px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: border 0.2s;
+    }
+
+    .dest-input-container:focus-within {
+      border-color: var(--primary);
+    }
+
+    .dest-input {
+      background: transparent;
+      border: none;
+      color: white;
+      font-family: inherit;
+      font-size: 1rem;
+      width: 100%;
+    }
+
+    .dest-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+
+    .icon-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+    }
+
+    .action-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 8px;
+      border-radius: var(--rad-pill);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .toggle-group {
+      display: flex;
+      gap: 5px;
+    }
+
+    .toggle-btn {
+      padding: 12px 24px;
+      border-radius: var(--rad-pill);
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .toggle-btn:hover {
+      color: white;
+    }
+
+    .toggle-btn.active {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-exchange {
+      background: linear-gradient(135deg, var(--primary), #0066cc);
+      color: white;
+      font-weight: 700;
+      padding: 14px 45px;
+      border-radius: var(--rad-pill);
+      font-size: 1.05rem;
+      letter-spacing: 0.02em;
+      box-shadow: 0 0 20px var(--primary-glow);
+      transition: transform 0.1s, box-shadow 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-exchange:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 35px var(--primary-glow);
+    }
+
+    .btn-exchange:active {
+      transform: translateY(0);
+    }
+
+    .fee-breakdown {
+      margin-top: 15px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .fee-highlight {
+      color: #fbbf24;
+      font-weight: 500;
+    }
+
+    /* Minimum Amount Warning */
+    .min-amount-warning {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 71, 87, 0.15);
+      border: 1px solid rgba(255, 71, 87, 0.4);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-top: 12px;
+      font-size: 0.85rem;
+      color: #ff6b7a;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .min-amount-warning .warning-icon {
+      font-size: 1rem;
+    }
+
+    .min-amount-warning #minAmountValue {
+      font-weight: 600;
+      color: #ff8a94;
+    }
+
+    .min-amount-warning.hidden {
+      display: none;
+    }
+
+    /* Exchange Message (errors, status) */
+    .exchange-message {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: rgba(255, 71, 87, 0.1);
+      border: 1px solid rgba(255, 71, 87, 0.3);
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-top: 15px;
+      font-size: 0.9rem;
+      color: #ff6b7a;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .exchange-message.hidden {
+      display: none;
+    }
+
+    .exchange-message .message-icon {
+      font-size: 1.1rem;
+    }
+
+    .exchange-message.warning {
+      background: rgba(255, 165, 2, 0.1);
+      border-color: rgba(255, 165, 2, 0.3);
+      color: #ffa502;
+    }
+
+    .exchange-message.info {
+      background: rgba(0, 212, 255, 0.1);
+      border-color: rgba(0, 212, 255, 0.3);
+      color: #00d4ff;
+    }
+
+    /* Address Validation */
+    .address-validation {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      font-size: 0.85rem;
+    }
+
+    .address-validation.hidden {
+      display: none;
+    }
+
+    .address-validation.valid {
+      color: #00d4aa;
+    }
+
+    .address-validation.invalid {
+      color: #ff6b7a;
+    }
+
+    /* Email Notification Toggle */
+    .email-notify-section {
+      margin-top: 15px;
+      padding: 15px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+    }
+
+    .email-toggle {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .email-toggle input {
+      display: none;
+    }
+
+    .toggle-slider {
+      width: 44px;
+      height: 24px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      position: relative;
+      transition: background 0.2s;
+    }
+
+    .toggle-slider::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 18px;
+      height: 18px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.2s;
+    }
+
+    .email-toggle input:checked+.toggle-slider {
+      background: var(--primary);
+    }
+
+    .email-toggle input:checked+.toggle-slider::after {
+      transform: translateX(20px);
+    }
+
+    .toggle-label {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .email-required-wrap {
+      margin-top: 5px;
+    }
+
+    .email-label {
+      display: block;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .email-hint {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      margin-top: 6px;
+      opacity: 0.7;
+    }
+
+    .email-input-wrap {
+      margin-top: 12px;
+    }
+
+    .email-input-wrap.hidden {
+      display: none;
+    }
+
+    .email-input {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 12px 15px;
+      color: white;
+      font-size: 0.95rem;
+      font-family: inherit;
+    }
+
+    .email-input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .email-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    /* Dropdown */
+    .dropdown-modal {
+      position: absolute;
+      top: 100px;
+      width: 360px;
+      background: #101222;
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+      z-index: 100;
+      overflow: hidden;
+      animation: fadeIn 0.2s ease-out;
+      display: flex;
+      flex-direction: column;
+      max-height: 500px;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .dd-search-wrap {
+      padding: 15px;
+      border-bottom: 1px solid var(--border-color);
+      background: #15172b;
+    }
+
+    .dd-search {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 10px 15px;
+      border-radius: 10px;
+      color: white;
+      font-size: 0.95rem;
+    }
+
+    .dd-search:focus {
+      border-color: var(--primary);
+    }
+
+    .dd-list {
+      overflow-y: auto;
+      flex: 1;
+      padding: 5px 0;
+    }
+
+    .dd-category {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      padding: 15px 20px 5px;
+      font-weight: 700;
+    }
+
+    .dd-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+
+    .dd-item:hover {
+      background: rgba(79, 126, 255, 0.15);
+    }
+
+    .dd-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .icon-fiat {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 14px;
+      color: white;
+    }
+
+    .dd-info {
+      flex: 1;
+    }
+
+    .dd-symbol {
+      display: block;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: white;
+    }
+
+    .dd-name {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+    }
+
+    /* --- TRUSTED SECTION (UPDATED) --- */
+    .trusted-section {
+      padding: 30px 0 80px;
+      position: relative;
+      z-index: 5;
+    }
+
+    .trusted-title {
+      font-size: 2.8rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 50px;
+      background: linear-gradient(to right, #fff, #a5b4fc);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .trusted-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+    }
+
+    .trusted-card {
+      background: linear-gradient(180deg, rgba(30, 32, 60, 0.6) 0%, rgba(10, 12, 25, 0.9) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      padding: 40px 30px;
+      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      min-height: 450px;
+      justify-content: flex-start;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .trusted-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(79, 126, 255, 0.5);
+      box-shadow: 0 10px 40px rgba(79, 126, 255, 0.15);
+    }
+
+    .trusted-img-wrapper {
+      width: 220px;
+      height: 220px;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    /* ROBOT IMAGES - Embedded SVGs for reliability */
+    .trusted-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 0 30px rgba(0, 212, 255, 0.2));
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .trusted-card:hover .trusted-img {
+      transform: scale(1.15) translateY(-10px);
+    }
+
+    .tc-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 15px;
+      color: white;
+    }
+
+    .tc-desc {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .highlight-text {
+      color: var(--accent-cyan);
+      font-weight: 600;
+    }
+
+    /* --- RECENT TRANSACTIONS --- */
+    .recent-section {
+      padding: 40px 0 100px;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .section-sub {
+      color: var(--text-muted);
+    }
+
+    .tx-table {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .tx-row {
+      display: grid;
+      grid-template-columns: 1fr 2fr 1fr;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 15px 25px;
+      border-radius: var(--rad-pill);
+      border: 1px solid rgba(255, 255, 255, 0.02);
+      transition: background 0.2s;
+      animation: slideDown 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .tx-row:hover {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .tx-time {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .tx-pair {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .tx-asset {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .tx-amt {
+      color: white;
+    }
+
+    .tx-ticker {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .tx-arrow {
+      color: var(--primary);
+      font-size: 1rem;
+    }
+
+    .tx-status {
+      text-align: right;
+      color: var(--accent-cyan);
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 5px;
+    }
+
+    .tx-icon-sm {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+    }
+
+    .tx-icon-fiat {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 11px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+    }
+
+    /* FIX FOR XLM LOGO VISIBILITY */
+    .icon-invert {
+      filter: invert(1) grayscale(1) brightness(1.5);
+    }
+
+
+    /* --- FAQ SECTION (HUGE) --- */
+    .faq-section {
+      padding: 0 0 100px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .faq-title {
+      font-size: 3.5rem;
+      font-weight: 800;
+      margin-bottom: 50px;
+      color: white;
+    }
+
+    .faq-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .faq-item {
+      border-bottom: 1px solid var(--border-color);
+      padding: 35px 0;
+    }
+
+    .faq-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .faq-q-wrap {
+      display: flex;
+      align-items: center;
+      gap: 25px;
+    }
+
+    .faq-num {
+      font-size: 2rem;
+      font-weight: 300;
+      color: var(--text-muted);
+      width: 40px;
+    }
+
+    .faq-q {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: white;
+    }
+
+    .faq-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      transition: all 0.2s;
+    }
+
+    .faq-item.active .faq-btn {
+      background: var(--primary);
+      color: white;
+      transform: rotate(45deg);
+      border-color: transparent;
+    }
+
+    .faq-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      color: var(--text-muted);
+      line-height: 1.7;
+      font-size: 1.1rem;
+      padding-left: 65px;
+      padding-right: 20px;
+    }
+
+    .faq-item.active .faq-body {
+      padding-top: 20px;
+    }
+
+    .faq-sub {
+      color: white;
+      font-weight: 700;
+      font-size: 1rem;
+      margin: 15px 0 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    @media (max-width: 800px) {
+      .hero {
+        padding-top: 100px;
+      }
+
+      .swap-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .swap-arrow {
+        transform: rotate(90deg);
+        margin: 10px 0;
+      }
+
+      .swap-arrow:hover {
+        transform: rotate(270deg);
+      }
+
+      .action-row {
+        flex-direction: column;
+        border-radius: 20px;
+      }
+
+      .toggle-group {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .toggle-btn {
+        flex: 1;
+        text-align: center;
+      }
+
+      .btn-exchange {
+        width: 100%;
+        margin-top: 10px;
+      }
+
+      .trusted-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .tx-row {
+        grid-template-columns: 1fr 1fr;
+        row-gap: 10px;
+      }
+
+      .tx-left {
+        grid-column: span 2;
+        font-size: 0.8rem;
+      }
+
+      .tx-pair {
+        grid-column: span 2;
+        justify-content: flex-start;
+      }
+
+      .tx-right {
+        display: none;
+      }
+
+      .main-nav {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="bg-stars"></div>
+  <div class="planet-1"></div>
+  <div class="planet-2"></div>
+
+  <header class="site-header">
+    <div class="container nav-inner">
+      <div class="logo">
+        <div class="logo-icon"></div>
+        <span>AstroShift</span>
+      </div>
+      <nav class="main-nav">
+        <a href="/">Exchange</a>
+        <a href="/track.html">Track Order</a>
+        <a href="/faq.html">FAQ</a>
+        <a href="/support.html">Support</a>
+        <a href="/orders.html" id="ordersNavLink" style="display:none;">My Orders</a>
+      </nav>
+      <div id="authSection">
+        <a href="/login.html" class="btn-small" id="loginBtn">Log In</a>
+        <a href="#" class="btn-small" id="logoutBtn" style="display:none;" onclick="logout()">Log Out</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container" style="display:flex; flex-direction:column; align-items:center;">
+
+        <div class="hero-title-wrap">
+          <h1>Lightning cryptocurrency exchange</h1>
+        </div>
+
+        <div class="exchange-widget">
+
+          <div class="swap-grid">
+            <div class="input-group group-send">
+              <div class="input-top-row">
+                <span>You Send</span>
+                <span id="sendBalance" style="display:none">Bal: 0.00</span>
+              </div>
+              <div class="input-main">
+                <input type="number" id="sendAmount" class="amount-input" placeholder="0.00" value="100">
+                <button class="asset-btn" id="sendAssetBtn">
+                  <div id="sendIconWrapper"></div>
+                  <div class="asset-info">
+                    <div class="asset-symbol" id="sendSymbol">BTC</div>
+                  </div>
+                  <span class="chevron">▼</span>
+                </button>
+              </div>
+              <div class="min-amount-warning hidden" id="minWarning">
+                <span class="warning-icon">⚠</span> Minimum amount <span id="minAmountValue">$5.00</span>
+              </div>
+              <div class="rate-row">
+                <div class="rate-subtext" id="sendRateLine">1 BTC ≈ $64,000</div>
+              </div>
+            </div>
+
+            <div class="swap-arrow">
+              ⇄
+            </div>
+
+            <div class="input-group group-receive">
+              <div class="input-top-row">
+                <span>You Receive</span>
+              </div>
+              <div class="input-main">
+                <input type="text" id="receiveAmount" class="amount-input" placeholder="≈ 0.00" readonly>
+                <button class="asset-btn" id="receiveAssetBtn">
+                  <div id="receiveIconWrapper"></div>
+                  <div class="asset-info">
+                    <div class="asset-symbol" id="receiveSymbol">USDT</div>
+                  </div>
+                  <span class="chevron">▼</span>
+                </button>
+              </div>
+
+              <div class="rate-row">
+                <div class="rate-subtext" id="receiveRateLine">1 USDT ≈ $1.00</div>
+                <div class="fiat-subtext" id="receiveFiatValue">➜ ≈ $0.00</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dest-group">
+            <div class="dest-input-container">
+              <input type="text" id="destWallet" class="dest-input" placeholder="Your wallet address" autocomplete="off"
+                autocorrect="off" autocapitalize="off" spellcheck="false" data-form-type="other">
+              <div class="dest-actions">
+                <button class="icon-btn" title="Paste" id="pasteBtn">📋</button>
+                <button class="icon-btn" title="Scan QR">📷</button>
+              </div>
+            </div>
+            <div class="address-validation hidden" id="addressValidation">
+              <span class="validation-icon"></span>
+              <span class="validation-text"></span>
+            </div>
+          </div>
+
+          <!-- Email Notification (Required) -->
+          <div class="email-notify-section">
+            <div class="email-required-wrap">
+              <label class="email-label">Email for order updates <span style="color:#ff6b7a;">*</span></label>
+              <input type="email" id="notifyEmail" class="email-input" placeholder="your@email.com" autocomplete="off"
+                autocorrect="off" autocapitalize="off" spellcheck="false" data-form-type="other" required>
+              <p class="email-hint">We'll send you order confirmations and status updates</p>
+            </div>
+          </div>
+
+          <div class="action-row">
+            <div class="toggle-group">
+              <button class="toggle-btn active" data-type="fixed" data-rate="1.0">Fixed rate (1.0%)</button>
+              <button class="toggle-btn" data-type="float" data-rate="0.5">Float rate (0.5%)</button>
+            </div>
+            <button class="btn-exchange" id="exchangeBtn">Exchange now</button>
+          </div>
+
+          <div class="fee-breakdown">
+            <span id="feeText">Total fee: <span class="fee-highlight">1.0%</span></span>
+          </div>
+
+          <!-- Error/Status Message -->
+          <div class="exchange-message hidden" id="exchangeMessage">
+            <span class="message-icon">⚠</span>
+            <span class="message-text" id="messageText">Error message here</span>
+          </div>
+
+          <div id="assetDropdown" class="dropdown-modal hidden">
+            <div class="dd-search-wrap">
+              <input type="text" id="assetSearch" class="dd-search" placeholder="Type a currency or ticker">
+            </div>
+            <div class="dd-list" id="dropdownList">
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <section class="trusted-section">
+      <div class="container">
+        <h2 class="trusted-title">Trusted since 2018</h2>
+        <div class="trusted-grid">
+
+          <div class="trusted-card">
+            <div class="trusted-img-wrapper">
+              <img
+                src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 300'%3E%3Cdefs%3E%3ClinearGradient id='grad1' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%234f7eff;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%2300d4ff;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='150' cy='150' r='120' fill='url(%23grad1)' opacity='0.2' /%3E%3Cg transform='translate(60,60) scale(0.6)'%3E%3Cpath fill='%23ffffff' d='M150,30C83.7,30,30,83.7,30,150s53.7,120,120,120s120-53.7,120-120S216.3,30,150,30z M150,250c-55.2,0-100-44.8-100-100S94.8,50,150,50s100,44.8,100,100S205.2,250,150,250z'/%3E%3Cpath fill='%2300d4ff' d='M150,70c-44.1,0-80,35.9-80,80s35.9,80,80,80s80-35.9,80-80S194.1,70,150,70z M150,210c-33.1,0-60-26.9-60-60s26.9-60,60-60s60,26.9,60,60S183.1,210,150,210z'/%3E%3Crect x='145' y='90' width='10' height='60' rx='5' fill='%23ffffff'/%3E%3Crect x='145' y='145' width='60' height='10' rx='5' fill='%23ffffff' transform='rotate(90 150 150)'/%3E%3Ccircle cx='150' cy='150' r='10' fill='%2300d4ff'/%3E%3Cpath fill='%23ffffff' d='M250,150c0-55.2-44.8-100-100-100v20c44.1,0,80,35.9,80,80H250z' opacity='0.5'/%3E%3C/g%3E%3C/svg%3E"
+                alt="Fast Robot" class="trusted-img">
+            </div>
+            <div class="tc-title">Save time</div>
+            <div class="tc-desc">Maximum exchange speed due to full automation. Quote the trade in seconds.</div>
+          </div>
+
+          <div class="trusted-card">
+            <div class="trusted-img-wrapper">
+              <img
+                src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 300'%3E%3Cdefs%3E%3ClinearGradient id='grad2' x1='100%25' y1='0%25' x2='0%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%238a2be2;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23ff007a;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='150' cy='150' r='120' fill='url(%23grad2)' opacity='0.2' /%3E%3Cg transform='translate(60,60) scale(0.6)'%3E%3Cpath fill='none' stroke='%23ffffff' stroke-width='15' stroke-linecap='round' stroke-linejoin='round' d='M70,180 C70,180 120,220 180,180'/%3E%3Cpath fill='none' stroke='%23ffffff' stroke-width='15' stroke-linecap='round' stroke-linejoin='round' d='M230,120 C230,120 180,80 120,120'/%3E%3Cpolygon fill='%23ff007a' points='240,180 200,150 200,210'/%3E%3Cpolygon fill='%238a2be2' points='60,120 100,150 100,90'/%3E%3Ccircle cx='150' cy='150' r='40' fill='none' stroke='%23ffffff' stroke-width='10' opacity='0.6'/%3E%3Ctext x='150' y='165' font-family='Inter, Arial' font-size='40' fill='white' text-anchor='middle' font-weight='bold'%3E$%3C/text%3E%3C/g%3E%3C/svg%3E"
+                alt="Exchange Robot" class="trusted-img">
+            </div>
+            <div class="tc-title">Make an exchange</div>
+            <div class="tc-desc">Pick the right strategy and make favourable trades. Customers pay you directly.</div>
+          </div>
+
+          <div class="trusted-card">
+            <div class="trusted-img-wrapper">
+              <img
+                src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 300'%3E%3Cdefs%3E%3ClinearGradient id='grad3' x1='0%25' y1='100%25' x2='100%25' y2='0%25'%3E%3Cstop offset='0%25' style='stop-color:%2300d632;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23f7931a;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='150' cy='150' r='120' fill='url(%23grad3)' opacity='0.2' /%3E%3Cg transform='translate(75,75) scale(0.5)'%3E%3Cpath fill='%23ffffff' d='M150,30c-66.3,0-120,53.7-120,120s53.7,120,120,120s120-53.7,120-120S216.3,30,150,30z M150,250c-55.2,0-100-44.8-100-100S94.8,50,150,50s100,44.8,100,100S205.2,250,150,250z'/%3E%3Cpath fill='%2300d632' d='M150,70c-44.1,0-80,35.9-80,80c0,44.1,35.9,80,80,80s80-35.9,80-80C230,105.9,194.1,70,150,70z'/%3E%3Ctext x='150' y='185' font-family='Inter, Arial' font-size='120' fill='white' text-anchor='middle' font-weight='bold'%3E$%3C/text%3E%3Cpath fill='%23ffffff' d='M200,220l-50,40l-50-40v-50h100V220z' opacity='0.8'/%3E%3Crect x='135' y='170' width='30' height='40' rx='5' fill='%23f7931a'/%3E%3C/g%3E%3C/svg%3E"
+                alt="Money Robot" class="trusted-img">
+            </div>
+            <div class="tc-title">Save money</div>
+            <div class="tc-desc">Best exchange rates and minimum commissions. No hidden fees, ever. <span
+                class="highlight-text">We never ask for KYC.</span></div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <section class="recent-section">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Recent transactions</h2>
+          <div class="section-sub">Live feed from the AstroShift network</div>
+        </div>
+        <div class="tx-table" id="recentList">
+        </div>
+      </div>
+    </section>
+
+    <section class="faq-section" id="faq">
+      <div class="container">
+        <h2 class="faq-title">FAQ</h2>
+
+        <div class="faq-list">
+
+          <div class="faq-item">
+            <div class="faq-head">
+              <div class="faq-q-wrap">
+                <span class="faq-num">1</span>
+                <span class="faq-q">How can I track my order?</span>
+              </div>
+              <button class="faq-btn">+</button>
+            </div>
+            <div class="faq-body">
+              <p>In three ways: by email (if you leave your email address), on our website (if your browser accepts
+                cookies) or by viewing the transactions in the blockchain by the links from your order.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-head">
+              <div class="faq-q-wrap">
+                <span class="faq-num">2</span>
+                <span class="faq-q">Why can I trust you?</span>
+              </div>
+              <button class="faq-btn">+</button>
+            </div>
+            <div class="faq-body">
+              <p>No registration and no need to share your personal details. We don't hold your funds, all exchanges
+                take place instantly in fully automatic mode.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-head">
+              <div class="faq-q-wrap">
+                <span class="faq-num">3</span>
+                <span class="faq-q">Do you have hidden fees?</span>
+              </div>
+              <button class="faq-btn">+</button>
+            </div>
+            <div class="faq-body">
+              <p>Honesty is our main priority, so we commit to full transparency and make all the fees clear:</p>
+              <div class="faq-sub">Cash App / Zelle / PayPal fees</div>
+              <p>5.5% Extra fee and as well as the rate fee</p>
+              <div class="faq-sub">Rate fees</div>
+              <p>1% if you opt for a fixed rate</p>
+              <p>0.5% if you opt for a floating rate</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // --- 1. DATA CONFIGURATION ---
+    const BASE_ICON_URL = "https://cryptologos.cc/logos/";
+    const getLogo = (id) => {
+      const map = {
+        BTC: "bitcoin-btc-logo.png", ETH: "ethereum-eth-logo.png", USDT: "tether-usdt-logo.png",
+        LTC: "litecoin-ltc-logo.png", BNB: "bnb-bnb-logo.png", XRP: "xrp-xrp-logo.png",
+        SOL: "solana-sol-logo.png", DOGE: "dogecoin-doge-logo.png", ADA: "cardano-ada-logo.png",
+        TRX: "tron-trx-logo.png", DOT: "polkadot-new-dot-logo.png", MATIC: "polygon-matic-logo.png",
+        SHIB: "shiba-inu-shib-logo.png", AVAX: "avalanche-avax-logo.png", LINK: "chainlink-link-logo.png",
+        ATOM: "cosmos-atom-logo.png", UNI: "uniswap-uni-logo.png", XMR: "monero-xmr-logo.png",
+        ETC: "ethereum-classic-etc-logo.png", XLM: "stellar-xlm-logo.png", BCH: "bitcoin-cash-bch-logo.png",
+        FIL: "filecoin-fil-logo.png", APT: "aptos-apt-logo.png", ARB: "arbitrum-arb-logo.png",
+        OP: "optimism-ethereum-op-logo.png"
+      };
+      if (map[id]) return BASE_ICON_URL + map[id] + "?v=025";
+      return null;
+    };
+
+    const ASSETS = {
+      // FIAT APPS
+      CASHAPP: { id: "CASHAPP", name: "Cash App", type: "fiat", rate: 1, color: "#00d632", popular: true },
+      ZELLE: { id: "ZELLE", name: "Zelle", type: "fiat", rate: 1, color: "#6d1ed4", popular: true },
+      PAYPAL: { id: "PAYPAL", name: "PayPal", type: "fiat", rate: 1, color: "#00457c", popular: true },
+      // CRYPTO
+      BTC: { id: "BTC", name: "Bitcoin", type: "crypto", rate: 64200, popular: true, color: "#F7931A" },
+      ETH: { id: "ETH", name: "Ethereum", type: "crypto", rate: 3200, popular: true, color: "#627EEA" },
+      USDT: { id: "USDT", name: "Tether", type: "crypto", rate: 1, popular: true, stable: true, color: "#26A17B" },
+      BNB: { id: "BNB", name: "BNB Smart Chain", type: "crypto", rate: 590, popular: true, color: "#F0B90B" },
+      SOL: { id: "SOL", name: "Solana", type: "crypto", rate: 145, popular: true, color: "#14F195" },
+      XRP: { id: "XRP", name: "XRP", type: "crypto", rate: 0.60, popular: true, color: "#23292F" },
+      USDC: { id: "USDC", name: "USDC", type: "crypto", rate: 1, popular: true, stable: true, color: "#2775CA" },
+      DOGE: { id: "DOGE", name: "Dogecoin", type: "crypto", rate: 0.16, popular: true, color: "#C2A633" },
+      ADA: { id: "ADA", name: "Cardano", type: "crypto", rate: 0.45, popular: true, color: "#0033AD" },
+      TRX: { id: "TRX", name: "Tron", type: "crypto", rate: 0.12, popular: true, color: "#FF0013" },
+      AVAX: { id: "AVAX", name: "Avalanche", type: "crypto", rate: 45, color: "#E84142" },
+      SHIB: { id: "SHIB", name: "Shiba Inu", type: "crypto", rate: 0.000025, color: "#FFA409" },
+      DOT: { id: "DOT", name: "Polkadot", type: "crypto", rate: 7.2, color: "#E6007A" },
+      LINK: { id: "LINK", name: "Chainlink", type: "crypto", rate: 16, color: "#2A5ADA" },
+      MATIC: { id: "MATIC", name: "Polygon", type: "crypto", rate: 0.7, color: "#8247E5" },
+      BCH: { id: "BCH", name: "Bitcoin Cash", type: "crypto", rate: 450, color: "#8DC351" },
+      LTC: { id: "LTC", name: "Litecoin", type: "crypto", rate: 85, color: "#345D9D" },
+      UNI: { id: "UNI", name: "Uniswap", type: "crypto", rate: 10, color: "#FF007A" },
+      APT: { id: "APT", name: "Aptos", type: "crypto", rate: 12, color: "#000000" },
+      ARB: { id: "ARB", name: "Arbitrum", type: "crypto", rate: 1.1, color: "#2D374B" },
+      OP: { id: "OP", name: "Optimism", type: "crypto", rate: 2.5, color: "#FF0420" },
+      XMR: { id: "XMR", name: "Monero", type: "crypto", rate: 120, color: "#FF6600" },
+      ETC: { id: "ETC", name: "Ethereum Classic", type: "crypto", rate: 25, color: "#328332" },
+      XLM: { id: "XLM", name: "Stellar", type: "crypto", rate: 0.11, color: "#000000" },
+      FIL: { id: "FIL", name: "Filecoin", type: "crypto", rate: 6.0, color: "#0090FF" },
+      ATOM: { id: "ATOM", name: "Cosmos", type: "crypto", rate: 9.5, color: "#2E3148" }
+    };
+
+    // Global State
+    let state = {
+      send: "CASHAPP",
+      receive: "ETH",
+      amount: 100,
+      rateType: "fixed", // 'fixed' or 'float'
+      baseRateFee: 1.0,  // 1.0% or 0.5%
+      fiatFee: 5.5       // Extra fee for CashApp/Zelle/PayPal
+    };
+
+    // --- DOM ELEMENTS ---
+    const sendInput = document.getElementById('sendAmount');
+    const recvInput = document.getElementById('receiveAmount');
+    const feeText = document.getElementById('feeText');
+    const receiveFiatValue = document.getElementById('receiveFiatValue');
+    const dropdown = document.getElementById('assetDropdown');
+    const recentList = document.getElementById('recentList');
+
+    // --- UI UPDATES ---
+    function renderIcon(containerId, asset) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+      const logoUrl = getLogo(asset.id);
+      if (asset.type === 'fiat') {
+        const el = document.createElement('div');
+        el.className = "asset-icon-img icon-fiat";
+        el.style.backgroundColor = asset.color;
+        el.textContent = asset.id === 'CASHAPP' ? '$' : (asset.id === 'PAYPAL' ? 'P' : 'Z');
+        container.appendChild(el);
+      } else if (logoUrl) {
+        const img = document.createElement('img');
+        img.src = logoUrl;
+        img.className = "asset-icon-img";
+        // FIX FOR XLM IN DROPDOWN/WIDGET
+        if (asset.id === 'XLM') { img.classList.add('icon-invert'); }
+        container.appendChild(img);
+      } else {
+        const el = document.createElement('div');
+        el.className = "asset-icon-img icon-fiat";
+        el.style.backgroundColor = "#555";
+        el.textContent = asset.id[0];
+        container.appendChild(el);
+      }
+    }
+
+    function updateUI() {
+      const sAsset = ASSETS[state.send];
+      const rAsset = ASSETS[state.receive];
+      const sendSymbolEl = document.getElementById('sendSymbol');
+      const recvSymbolEl = document.getElementById('receiveSymbol');
+
+      sendSymbolEl.textContent = sAsset.name;
+      recvSymbolEl.textContent = rAsset.name;
+
+      if (sAsset.color) sendSymbolEl.style.color = sAsset.color;
+      else sendSymbolEl.style.color = 'white';
+
+      if (rAsset.color) recvSymbolEl.style.color = rAsset.color;
+      else recvSymbolEl.style.color = 'white';
+
+      renderIcon('sendIconWrapper', sAsset);
+      renderIcon('receiveIconWrapper', rAsset);
+
+      const sRate = sAsset.rate.toLocaleString();
+      const rRate = rAsset.rate.toLocaleString();
+      document.getElementById('sendRateLine').textContent = `1 ${sAsset.id} ≈ $${sRate}`;
+      document.getElementById('receiveRateLine').textContent = `1 ${rAsset.id} ≈ $${rRate}`;
+
+      calculate();
+      updateFeeDisplay();
+    }
+
+    function calculate() {
+      const sAsset = ASSETS[state.send];
+      const rAsset = ASSETS[state.receive];
+      const val = parseFloat(sendInput.value) || 0;
+
+      if (val <= 0) {
+        recvInput.value = "";
+        receiveFiatValue.textContent = "➜ ≈ $0.00";
+        return;
+      }
+
+      const usdVal = val * sAsset.rate;
+      let totalFee = state.baseRateFee;
+      if (sAsset.type === 'fiat') {
+        totalFee += state.fiatFee;
+      }
+      const feeMultiplier = 1 - (totalFee / 100);
+      const valAfterFee = usdVal * feeMultiplier;
+      const finalAmt = valAfterFee / rAsset.rate;
+
+      recvInput.value = "≈ " + (finalAmt < 1 ? finalAmt.toPrecision(6) : finalAmt.toFixed(2));
+      receiveFiatValue.textContent = `➜ ≈ $${valAfterFee.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+
+    function updateFeeDisplay() {
+      const sAsset = ASSETS[state.send];
+      const isFiat = sAsset.type === 'fiat';
+      let totalPct = state.baseRateFee + (isFiat ? state.fiatFee : 0);
+      let html = `Total fee: <span class="fee-highlight">${totalPct.toFixed(1)}%</span>`;
+      if (isFiat) {
+        html += ` (${state.baseRateFee}% Rate + ${state.fiatFee}% Fiat Processing)`;
+      } else {
+        html += ` (${state.rateType} rate)`;
+      }
+      feeText.innerHTML = html;
+
+      // Hide warning when switching to crypto
+      if (!isFiat && typeof minWarning !== 'undefined') {
+        minWarning.classList.add('hidden');
+      }
+    }
+
+    // --- INTERACTION LISTENERS ---
+    document.querySelectorAll('.toggle-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.rateType = btn.dataset.type;
+        state.baseRateFee = parseFloat(btn.dataset.rate);
+        updateUI();
+      });
+    });
+
+    // Dropdown Logic
+    let activeSide = null;
+    function buildDropdown(side) {
+      const list = document.getElementById('dropdownList');
+      list.innerHTML = '';
+      const createCategory = (title) => {
+        const div = document.createElement('div');
+        div.className = "dd-category";
+        div.textContent = title;
+        list.appendChild(div);
+      };
+      const createItem = (asset) => {
+        const row = document.createElement('div');
+        row.className = "dd-item";
+        let iconHtml = '';
+        const logo = getLogo(asset.id);
+        if (asset.type === 'fiat') {
+          iconHtml = `<div class="dd-icon icon-fiat" style="background:${asset.color}">${asset.id === 'CASHAPP' ? '$' : asset.id === 'PAYPAL' ? 'P' : 'Z'}</div>`;
+        } else if (logo) {
+          // FIX FOR XLM IN DROPDOWN LIST
+          const extraClass = asset.id === 'XLM' ? ' icon-invert' : '';
+          iconHtml = `<img src="${logo}" class="dd-icon${extraClass}">`;
+        } else {
+          iconHtml = `<div class="dd-icon icon-fiat" style="background:#555">${asset.id[0]}</div>`;
+        }
+        const colorStyle = asset.color ? `style="color:${asset.color}"` : `style="color:white"`;
+        row.innerHTML = `${iconHtml}<div class="dd-info"><span class="dd-symbol" ${colorStyle}>${asset.id}</span><span class="dd-name">${asset.name}</span></div>`;
+        row.onclick = () => {
+          if (side === 'send') state.send = asset.id;
+          else state.receive = asset.id;
+          dropdown.classList.add('hidden');
+          updateUI();
+          checkMinimum();
+        };
+        list.appendChild(row);
+      };
+      const allAssets = Object.values(ASSETS);
+      createCategory("Popular & Fiat");
+      allAssets.filter(a => a.popular || a.type === 'fiat').forEach(a => {
+        if (side === 'receive' && a.type === 'fiat') return;
+        createItem(a);
+      });
+      createCategory("All Cryptocurrencies");
+      allAssets.filter(a => a.type === 'crypto' && !a.popular).forEach(a => createItem(a));
+    }
+
+    const sendBtn = document.getElementById('sendAssetBtn');
+    const recvBtn = document.getElementById('receiveAssetBtn');
+    const toggleDropdown = (side) => {
+      activeSide = side;
+      buildDropdown(side);
+      if (side === 'send') {
+        dropdown.style.left = '30px'; dropdown.style.right = 'auto';
+      } else {
+        dropdown.style.right = '30px'; dropdown.style.left = 'auto';
+      }
+      dropdown.classList.remove('hidden');
+    };
+    sendBtn.onclick = (e) => { e.stopPropagation(); toggleDropdown('send'); };
+    recvBtn.onclick = (e) => { e.stopPropagation(); toggleDropdown('receive'); };
+    document.addEventListener('click', (e) => {
+      if (!dropdown.contains(e.target)) dropdown.classList.add('hidden');
+    });
+
+    // --- LIVE TRANSACTIONS ---
+    const fiatKeys = ['CASHAPP', 'ZELLE', 'PAYPAL'];
+    const cryptoKeys = Object.keys(ASSETS).filter(k => {
+      const a = ASSETS[k];
+      return a.type === 'crypto' && !a.stable;
+    });
+
+    function addTransaction() {
+      const isFiatSource = Math.random() < 0.7;
+      let sourceKey;
+      if (isFiatSource) {
+        sourceKey = fiatKeys[Math.floor(Math.random() * fiatKeys.length)];
+      } else {
+        sourceKey = cryptoKeys[Math.floor(Math.random() * cryptoKeys.length)];
+      }
+      let destKey = cryptoKeys[Math.floor(Math.random() * cryptoKeys.length)];
+      while (sourceKey === destKey) destKey = cryptoKeys[Math.floor(Math.random() * cryptoKeys.length)];
+
+      const sA = ASSETS[sourceKey];
+      let amtString;
+      if (sA.type === 'fiat') {
+        const val = Math.floor(Math.random() * 4900) + 100;
+        amtString = val.toLocaleString();
+      } else {
+        const val = (Math.random() * (1000 / sA.rate));
+        amtString = val.toFixed(4);
+      }
+
+      const time = "Just now";
+      const seconds = Math.floor(Math.random() * 30) + 2;
+      const row = document.createElement('div');
+      row.className = 'tx-row';
+
+      const getImg = (id) => {
+        const a = ASSETS[id];
+        if (a.type === 'fiat') {
+          return `<div class="tx-icon-fiat" style="background:${a.color}">${a.id === 'CASHAPP' ? '$' : a.id === 'PAYPAL' ? 'P' : 'Z'}</div>`;
+        }
+        // FIX FOR XLM IN TRANSACTIONS LIST
+        const extraClass = id === 'XLM' ? ' icon-invert' : '';
+        return `<img src="${getLogo(id)}" class="tx-icon-sm${extraClass}">`;
+      };
+      const getColorStyle = (id) => {
+        const a = ASSETS[id];
+        return a.color ? `style="color:${a.color}"` : '';
+      }
+
+      row.innerHTML = `
+        <div class="tx-time">${time}</div>
+        <div class="tx-pair">
+          <div class="tx-asset">
+            ${getImg(sourceKey)} <span class="tx-amt">${amtString}</span> <span class="tx-ticker" ${getColorStyle(sourceKey)}>${sourceKey}</span>
+          </div>
+          <div class="tx-arrow">➜</div>
+          <div class="tx-asset">
+            ${getImg(destKey)} <span class="tx-ticker" ${getColorStyle(destKey)}>${destKey}</span>
+          </div>
+        </div>
+        <div class="tx-status">⏱ ${seconds} sec</div>
+      `;
+
+      recentList.prepend(row);
+      if (recentList.children.length > 7) recentList.lastChild.remove();
+    }
+
+    // --- FAQ TOGGLES ---
+    document.querySelectorAll('.faq-head').forEach(head => {
+      head.addEventListener('click', () => {
+        const item = head.parentElement;
+        const isActive = item.classList.contains('active');
+        document.querySelectorAll('.faq-item').forEach(i => {
+          i.classList.remove('active');
+          i.querySelector('.faq-body').style.maxHeight = null;
+        });
+        if (!isActive) {
+          item.classList.add('active');
+          const body = item.querySelector('.faq-body');
+          body.style.maxHeight = body.scrollHeight + "px";
+        }
+      });
+    });
+
+    // --- MINIMUM AMOUNT WARNING SETUP ---
+    const minWarning = document.getElementById('minWarning');
+    const minAmountValue = document.getElementById('minAmountValue');
+    const FIAT_MINIMUM = 5;
+
+    function checkMinimum() {
+      const sAsset = ASSETS[state.send];
+      const amount = parseFloat(sendInput.value) || 0;
+
+      if (sAsset.type === 'fiat') {
+        minAmountValue.textContent = '$' + FIAT_MINIMUM + '.00';
+        if (amount > 0 && amount < FIAT_MINIMUM) {
+          minWarning.classList.remove('hidden');
+          return false;
+        }
+      }
+      minWarning.classList.add('hidden');
+      return true;
+    }
+
+    // --- EMAIL INPUT ---
+    const notifyEmail = document.getElementById('notifyEmail');
+
+    // --- ADDRESS VALIDATION ---
+    const addressValidation = document.getElementById('addressValidation');
+    const destWalletInput = document.getElementById('destWallet');
+    let validationTimeout;
+
+    async function validateAddress() {
+      const address = destWalletInput.value.trim();
+      const currency = state.receive;
+
+      if (!address) {
+        addressValidation.classList.add('hidden');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/validate-address', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ address, currency })
+        });
+        const result = await res.json();
+
+        addressValidation.classList.remove('hidden', 'valid', 'invalid');
+        if (result.valid) {
+          addressValidation.classList.add('valid');
+          addressValidation.innerHTML = '<span class="validation-icon">✓</span><span>Valid ' + currency + ' address</span>';
+        } else {
+          addressValidation.classList.add('invalid');
+          addressValidation.innerHTML = '<span class="validation-icon">✗</span><span>Invalid ' + currency + ' address format</span>';
+        }
+      } catch (err) {
+        addressValidation.classList.add('hidden');
+      }
+    }
+
+    destWalletInput.addEventListener('input', () => {
+      clearTimeout(validationTimeout);
+      validationTimeout = setTimeout(validateAddress, 500);
+    });
+
+    // --- PASTE BUTTON ---
+    document.getElementById('pasteBtn').addEventListener('click', async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+        destWalletInput.value = text;
+        validateAddress();
+      } catch (err) {
+        console.log('Paste failed:', err);
+      }
+    });
+
+    // Listen for input changes - recalculate on every keystroke
+    sendInput.addEventListener('input', () => {
+      state.amount = parseFloat(sendInput.value);
+      calculate();
+      checkMinimum();
+    });
+
+    // --- INIT ---
+    updateUI();
+    addTransaction(); addTransaction(); addTransaction();
+    setInterval(addTransaction, 120000);
+
+    // --- EXCHANGE BUTTON HANDLER ---
+    const exchangeBtn = document.getElementById('exchangeBtn');
+    const destWallet = document.getElementById('destWallet');
+    const exchangeMessage = document.getElementById('exchangeMessage');
+    const messageText = document.getElementById('messageText');
+
+    function showMessage(text, type = 'error') {
+      messageText.textContent = text;
+      exchangeMessage.className = 'exchange-message ' + type;
+      exchangeMessage.classList.remove('hidden');
+
+      // Auto-hide after 5 seconds
+      setTimeout(() => {
+        exchangeMessage.classList.add('hidden');
+      }, 5000);
+    }
+
+    function hideMessage() {
+      exchangeMessage.classList.add('hidden');
+    }
+
+    exchangeBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      hideMessage();
+      console.log('Exchange button clicked');
+
+      const sAsset = ASSETS[state.send];
+      const rAsset = ASSETS[state.receive];
+      const amount = parseFloat(sendInput.value);
+      const toAddress = destWallet.value.trim();
+
+      console.log('Order details:', { send: state.send, receive: state.receive, amount, toAddress });
+
+      // Validation
+      if (!amount || amount <= 0) {
+        showMessage('Please enter a valid amount', 'warning');
+        return;
+      }
+
+      // Check minimum for fiat (show warning, don't proceed)
+      if (sAsset.type === 'fiat' && amount < FIAT_MINIMUM) {
+        checkMinimum();
+        return;
+      }
+
+      if (!toAddress) {
+        showMessage('Please enter your wallet address', 'warning');
+        return;
+      }
+
+      // Email is required
+      const email = notifyEmail.value.trim();
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showMessage('Please enter a valid email address for order updates', 'warning');
+        notifyEmail.focus();
+        return;
+      }
+
+      // Disable button during processing
+      exchangeBtn.disabled = true;
+      exchangeBtn.textContent = 'Processing...';
+
+      try {
+        console.log('Sending request to /api/order/create');
+        const orderData = {
+          fromCcy: state.send,
+          toCcy: state.receive,
+          amount: amount.toString(),
+          toAddress: toAddress,
+          type: state.rateType,
+          email: email
+        };
+
+        const res = await fetch('/api/order/create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(orderData)
+        });
+
+        console.log('Response status:', res.status);
+        const result = await res.json();
+        console.log('Response data:', result);
+
+        if (result.code === 0 && result.data) {
+          // Redirect to order page
+          window.location.href = `/order.html?id=${result.data.id}`;
+        } else {
+          showMessage(result.error || result.msg || 'Failed to create order. Please try again.');
+        }
+      } catch (err) {
+        console.error('Exchange error:', err);
+        showMessage('Connection error. Please try again.');
+      } finally {
+        exchangeBtn.disabled = false;
+        exchangeBtn.textContent = 'Exchange now';
+      }
+    });
+
+    // --- AUTH CHECK ---
+    function checkAuth() {
+      const token = localStorage.getItem('astroshift_token');
+      const loginBtn = document.getElementById('loginBtn');
+      const logoutBtn = document.getElementById('logoutBtn');
+      const ordersNavLink = document.getElementById('ordersNavLink');
+
+      if (token) {
+        loginBtn.style.display = 'none';
+        logoutBtn.style.display = 'inline-block';
+        ordersNavLink.style.display = 'inline';
+      } else {
+        loginBtn.style.display = 'inline-block';
+        logoutBtn.style.display = 'none';
+        ordersNavLink.style.display = 'none';
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('astroshift_token');
+      localStorage.removeItem('astroshift_email');
+      checkAuth();
+      window.location.href = '/';
+    }
+
+    checkAuth();
+
+  </script>
+</body>
+
+</html>

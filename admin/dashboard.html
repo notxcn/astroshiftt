@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AstroShift Admin Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #050511;
+      --bg-panel: rgba(30, 32, 60, 0.6);
+      --bg-card: rgba(18, 20, 35, 0.85);
+      --primary: #4f7eff;
+      --primary-glow: rgba(79, 126, 255, 0.5);
+      --accent-cyan: #00d4ff;
+      --text-main: #ffffff;
+      --text-muted: #8b90b5;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --error: #ff4757;
+      --success: #2ed573;
+      --warning: #ffa502;
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-dark);
+      min-height: 100vh;
+      color: var(--text-main);
+    }
+    
+    .bg-stars {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: url("data:image/svg+xml,%3Csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='stars' width='200' height='200' patternUnits='userSpaceOnUse'%3E%3Ccircle cx='10' cy='10' r='1' fill='rgba(255,255,255,0.15)'/%3E%3Ccircle cx='50' cy='80' r='0.5' fill='rgba(255,255,255,0.1)'/%3E%3Ccircle cx='150' cy='40' r='1.2' fill='rgba(255,255,255,0.2)'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23stars)'/%3E%3C/svg%3E");
+      z-index: -1;
+    }
+    
+    /* Header */
+    .header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(20px);
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .logo-icon {
+      width: 36px; height: 36px;
+      background: radial-gradient(circle at 30% 30%, #00d4ff, #4f7eff);
+      border-radius: 50%;
+      position: relative;
+      box-shadow: 0 0 15px rgba(79, 126, 255, 0.6);
+    }
+    
+    .logo-icon::before {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 140%; height: 40%;
+      border: 2px solid rgba(255,255,255,0.6);
+      border-radius: 50%;
+      transform: translate(-50%, -50%) rotate(-30deg);
+    }
+    
+    .logo-text {
+      font-size: 1.4rem;
+      font-weight: 800;
+    }
+    
+    .logo-badge {
+      background: var(--primary);
+      color: white;
+      font-size: 0.65rem;
+      padding: 3px 8px;
+      border-radius: 20px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .header-actions {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      font-family: inherit;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), #0066cc);
+      color: white;
+      box-shadow: 0 0 15px var(--primary-glow);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 25px var(--primary-glow);
+    }
+    
+    .btn-outline {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: var(--text-muted);
+    }
+    
+    .btn-outline:hover {
+      background: rgba(255,255,255,0.05);
+      color: white;
+    }
+    
+    .btn-danger {
+      background: var(--error);
+      color: white;
+    }
+    
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+    
+    /* Main Layout */
+    .main {
+      display: flex;
+      min-height: calc(100vh - 66px);
+    }
+    
+    /* Sidebar */
+    .sidebar {
+      width: 250px;
+      background: var(--bg-card);
+      border-right: 1px solid var(--border-color);
+      padding: 25px 0;
+      flex-shrink: 0;
+    }
+    
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 25px;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
+    }
+    
+    .nav-item:hover {
+      background: rgba(255,255,255,0.03);
+      color: white;
+    }
+    
+    .nav-item.active {
+      background: rgba(79, 126, 255, 0.1);
+      color: var(--primary);
+      border-left-color: var(--primary);
+    }
+    
+    .nav-item .icon {
+      font-size: 1.2rem;
+    }
+    
+    /* Content */
+    .content {
+      flex: 1;
+      padding: 30px;
+      overflow-y: auto;
+    }
+    
+    .page {
+      display: none;
+    }
+    
+    .page.active {
+      display: block;
+    }
+    
+    .page-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 25px;
+    }
+    
+    /* Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 25px;
+      margin-bottom: 20px;
+      backdrop-filter: blur(20px);
+    }
+    
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    /* Form Elements */
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 12px 16px;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 126, 255, 0.2);
+    }
+    
+    .form-group input::placeholder {
+      color: rgba(255,255,255,0.3);
+    }
+    
+    /* Toggle Switch */
+    .toggle-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .toggle {
+      position: relative;
+      width: 50px;
+      height: 26px;
+      cursor: pointer;
+    }
+    
+    .toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .toggle-slider {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(255,255,255,0.1);
+      border-radius: 26px;
+      transition: 0.3s;
+    }
+    
+    .toggle-slider::before {
+      content: '';
+      position: absolute;
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: 0.3s;
+    }
+    
+    .toggle input:checked + .toggle-slider {
+      background: var(--success);
+    }
+    
+    .toggle input:checked + .toggle-slider::before {
+      transform: translateX(24px);
+    }
+    
+    /* Payment Method Cards */
+    .payment-card {
+      background: rgba(0,0,0,0.2);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 15px;
+    }
+    
+    .payment-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .payment-name {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+    
+    .payment-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: white;
+    }
+    
+    .payment-icon.cashapp { background: #00d632; }
+    .payment-icon.zelle { background: #6d1ed4; }
+    .payment-icon.paypal { background: #00457c; }
+    
+    /* Orders Table */
+    .orders-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .orders-table th,
+    .orders-table td {
+      padding: 14px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .orders-table th {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    
+    .orders-table tr:hover {
+      background: rgba(255,255,255,0.02);
+    }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    
+    .status-awaiting_payment { background: rgba(255,165,2,0.2); color: var(--warning); }
+    .status-payment_submitted { background: rgba(79,126,255,0.2); color: var(--primary); }
+    .status-processing { background: rgba(0,212,255,0.2); color: var(--accent-cyan); }
+    .status-completed { background: rgba(46,213,115,0.2); color: var(--success); }
+    .status-error, .status-cancelled { background: rgba(255,71,87,0.2); color: var(--error); }
+    
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 20px;
+    }
+    
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+    
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+    }
+    
+    .stat-value.success { color: var(--success); }
+    .stat-value.warning { color: var(--warning); }
+    .stat-value.primary { color: var(--primary); }
+    
+    /* Toast Notifications */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      padding: 16px 24px;
+      border-radius: 12px;
+      font-weight: 500;
+      z-index: 1000;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s;
+    }
+    
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    
+    .toast.success {
+      background: var(--success);
+      color: white;
+    }
+    
+    .toast.error {
+      background: var(--error);
+      color: white;
+    }
+    
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s;
+    }
+    
+    .modal-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .modal {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 30px;
+      width: 100%;
+      max-width: 500px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    
+    .modal-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+    
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      margin-top: 25px;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-stars"></div>
+  
+  <header class="header">
+    <div class="logo">
+      <div class="logo-icon"></div>
+      <span class="logo-text">AstroShift</span>
+      <span class="logo-badge">Admin</span>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-outline" onclick="refreshData()">🔄 Refresh</button>
+      <button class="btn btn-outline" onclick="logout()">Logout</button>
+    </div>
+  </header>
+  
+  <div class="main">
+    <aside class="sidebar">
+      <div class="nav-item active" data-page="dashboard">
+        <span class="icon">📊</span>
+        <span>Dashboard</span>
+      </div>
+      <div class="nav-item" data-page="orders">
+        <span class="icon">📦</span>
+        <span>Orders</span>
+      </div>
+      <div class="nav-item" data-page="payments">
+        <span class="icon">💳</span>
+        <span>Payment Methods</span>
+      </div>
+      <div class="nav-item" data-page="settings">
+        <span class="icon">⚙️</span>
+        <span>Settings</span>
+      </div>
+    </aside>
+    
+    <main class="content">
+      <!-- Dashboard Page -->
+      <div class="page active" id="page-dashboard">
+        <h1 class="page-title">Dashboard</h1>
+        
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Pending Orders</div>
+            <div class="stat-value warning" id="stat-pending">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Processing</div>
+            <div class="stat-value primary" id="stat-processing">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Completed Today</div>
+            <div class="stat-value success" id="stat-completed">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Total Orders</div>
+            <div class="stat-value" id="stat-total">0</div>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-title">
+            Recent Orders
+            <button class="btn btn-outline" onclick="navigate('orders')">View All</button>
+          </div>
+          <table class="orders-table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Type</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Status</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+            <tbody id="recent-orders">
+              <tr><td colspan="6" style="text-align:center; color:var(--text-muted)">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- Orders Page -->
+      <div class="page" id="page-orders">
+        <h1 class="page-title">Order Management</h1>
+        
+        <div class="card">
+          <div class="card-title">
+            All Orders
+            <div style="display:flex; gap:10px;">
+              <select id="order-filter" style="background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:8px 12px; color:white;">
+                <option value="">All Status</option>
+                <option value="awaiting_payment">Awaiting Payment</option>
+                <option value="payment_submitted">Payment Submitted</option>
+                <option value="processing">Processing</option>
+                <option value="completed">Completed</option>
+                <option value="error">Error</option>
+              </select>
+            </div>
+          </div>
+          <table class="orders-table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>To Address</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="all-orders">
+              <tr><td colspan="7" style="text-align:center; color:var(--text-muted)">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- Payment Methods Page -->
+      <div class="page" id="page-payments">
+        <h1 class="page-title">Payment Methods</h1>
+        
+        <div class="card">
+          <div class="card-title">Configure Payment Methods</div>
+          
+          <!-- Cash App -->
+          <div class="payment-card">
+            <div class="payment-card-header">
+              <div class="payment-name">
+                <div class="payment-icon cashapp">$</div>
+                <span>Cash App</span>
+              </div>
+              <div class="toggle-wrap">
+                <span id="cashapp-status" class="status-badge status-error">Disabled</span>
+                <label class="toggle">
+                  <input type="checkbox" id="cashapp-enabled" onchange="togglePaymentMethod('cashapp')">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Cashtag (e.g., $YourCashtag)</label>
+              <input type="text" id="cashapp-cashtag" placeholder="$YourCashtag">
+            </div>
+            <button class="btn btn-primary" onclick="savePaymentMethod('cashapp')">Save Cash App</button>
+          </div>
+          
+          <!-- Zelle -->
+          <div class="payment-card">
+            <div class="payment-card-header">
+              <div class="payment-name">
+                <div class="payment-icon zelle">Z</div>
+                <span>Zelle</span>
+              </div>
+              <div class="toggle-wrap">
+                <span id="zelle-status" class="status-badge status-error">Disabled</span>
+                <label class="toggle">
+                  <input type="checkbox" id="zelle-enabled" onchange="togglePaymentMethod('zelle')">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Zelle Email</label>
+              <input type="email" id="zelle-email" placeholder="your@email.com">
+            </div>
+            <button class="btn btn-primary" onclick="savePaymentMethod('zelle')">Save Zelle</button>
+          </div>
+          
+          <!-- PayPal -->
+          <div class="payment-card">
+            <div class="payment-card-header">
+              <div class="payment-name">
+                <div class="payment-icon paypal">P</div>
+                <span>PayPal</span>
+              </div>
+              <div class="toggle-wrap">
+                <span id="paypal-status" class="status-badge status-error">Disabled</span>
+                <label class="toggle">
+                  <input type="checkbox" id="paypal-enabled" onchange="togglePaymentMethod('paypal')">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>PayPal Email</label>
+              <input type="email" id="paypal-email" placeholder="your@email.com">
+            </div>
+            <button class="btn btn-primary" onclick="savePaymentMethod('paypal')">Save PayPal</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Settings Page -->
+      <div class="page" id="page-settings">
+        <h1 class="page-title">Settings</h1>
+        
+        <div class="card">
+          <div class="card-title">FixedFloat API Credentials</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>API Key</label>
+              <input type="text" id="ff-api-key" placeholder="Your FixedFloat API Key">
+            </div>
+            <div class="form-group">
+              <label>API Secret</label>
+              <input type="password" id="ff-api-secret" placeholder="Your FixedFloat API Secret">
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="saveFFCredentials()">Save API Credentials</button>
+        </div>
+        
+        <div class="card">
+          <div class="card-title">Fee Configuration</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>AstroShift Markup (%)</label>
+              <input type="number" id="fee-markup" step="0.1" min="0" max="10" placeholder="1.0">
+            </div>
+            <div class="form-group">
+              <label>Fiat Processing Fee (%)</label>
+              <input type="number" id="fee-fiat" step="0.1" min="0" max="20" placeholder="5.5">
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="saveFees()">Save Fees</button>
+        </div>
+        
+        <div class="card">
+          <div class="card-title">Change Admin Password</div>
+          <div class="form-group">
+            <label>Current Password</label>
+            <input type="password" id="current-password" placeholder="Enter current password">
+          </div>
+          <div class="form-group">
+            <label>New Password</label>
+            <input type="password" id="new-password" placeholder="Enter new password">
+          </div>
+          <div class="form-group">
+            <label>Confirm New Password</label>
+            <input type="password" id="confirm-password" placeholder="Confirm new password">
+          </div>
+          <button class="btn btn-primary" onclick="changePassword()">Change Password</button>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <!-- Order Detail Modal -->
+  <div class="modal-overlay" id="order-modal">
+    <div class="modal">
+      <h2 class="modal-title">Order Details</h2>
+      <div id="order-detail-content"></div>
+      <div class="modal-actions">
+        <button class="btn btn-outline" onclick="closeModal()">Close</button>
+        <button class="btn btn-success" id="approve-btn" onclick="approveOrder()">Approve & Process</button>
+        <button class="btn btn-danger" id="reject-btn" onclick="rejectOrder()">Reject</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+  
+  <script>
+    let currentOrderId = null;
+    let config = {};
+    let orders = [];
+    
+    // Navigation
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const page = item.dataset.page;
+        navigate(page);
+      });
+    });
+    
+    function navigate(page) {
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.querySelector(`[data-page="${page}"]`).classList.add('active');
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(`page-${page}`).classList.add('active');
+    }
+    
+    // Toast notifications
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = `toast ${type} show`;
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+    
+    // Load config
+    async function loadConfig() {
+      try {
+        const res = await fetch('/api/admin/config');
+        config = await res.json();
+        
+        // Populate payment methods
+        for (const [key, method] of Object.entries(config.paymentMethods)) {
+          document.getElementById(`${key}-enabled`).checked = method.enabled;
+          updatePaymentStatus(key, method.enabled);
+          
+          if (key === 'cashapp') {
+            document.getElementById('cashapp-cashtag').value = method.cashtag || '';
+          } else {
+            document.getElementById(`${key}-email`).value = method.email || '';
+          }
+        }
+        
+        // Populate fees
+        document.getElementById('fee-markup').value = config.fees.astroShiftMarkup;
+        document.getElementById('fee-fiat').value = config.fees.fiatProcessingFee;
+        
+      } catch (err) {
+        showToast('Failed to load config', 'error');
+      }
+    }
+    
+    function updatePaymentStatus(method, enabled) {
+      const status = document.getElementById(`${method}-status`);
+      if (enabled) {
+        status.textContent = 'Enabled';
+        status.className = 'status-badge status-completed';
+      } else {
+        status.textContent = 'Disabled';
+        status.className = 'status-badge status-error';
+      }
+    }
+    
+    async function togglePaymentMethod(method) {
+      const enabled = document.getElementById(`${method}-enabled`).checked;
+      updatePaymentStatus(method, enabled);
+    }
+    
+    async function savePaymentMethod(method) {
+      const enabled = document.getElementById(`${method}-enabled`).checked;
+      let payload = { enabled };
+      
+      if (method === 'cashapp') {
+        payload.cashtag = document.getElementById('cashapp-cashtag').value;
+      } else {
+        payload.email = document.getElementById(`${method}-email`).value;
+      }
+      
+      try {
+        const res = await fetch('/api/admin/payment-methods', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ paymentMethods: { [method]: payload } })
+        });
+        
+        if (res.ok) {
+          showToast(`${method.charAt(0).toUpperCase() + method.slice(1)} saved successfully`);
+        } else {
+          throw new Error('Failed to save');
+        }
+      } catch (err) {
+        showToast('Failed to save payment method', 'error');
+      }
+    }
+    
+    async function saveFFCredentials() {
+      const apiKey = document.getElementById('ff-api-key').value;
+      const apiSecret = document.getElementById('ff-api-secret').value;
+      
+      try {
+        const res = await fetch('/api/admin/ff-credentials', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ apiKey, apiSecret })
+        });
+        
+        if (res.ok) {
+          showToast('API credentials saved');
+          document.getElementById('ff-api-key').value = '';
+          document.getElementById('ff-api-secret').value = '';
+        } else {
+          throw new Error('Failed');
+        }
+      } catch (err) {
+        showToast('Failed to save credentials', 'error');
+      }
+    }
+    
+    async function saveFees() {
+      const astroShiftMarkup = document.getElementById('fee-markup').value;
+      const fiatProcessingFee = document.getElementById('fee-fiat').value;
+      
+      try {
+        const res = await fetch('/api/admin/fees', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ astroShiftMarkup, fiatProcessingFee })
+        });
+        
+        if (res.ok) {
+          showToast('Fees updated');
+        } else {
+          throw new Error('Failed');
+        }
+      } catch (err) {
+        showToast('Failed to save fees', 'error');
+      }
+    }
+    
+    async function changePassword() {
+      const currentPassword = document.getElementById('current-password').value;
+      const newPassword = document.getElementById('new-password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+      
+      if (newPassword !== confirmPassword) {
+        showToast('Passwords do not match', 'error');
+        return;
+      }
+      
+      try {
+        const res = await fetch('/api/admin/password', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ currentPassword, newPassword })
+        });
+        
+        if (res.ok) {
+          showToast('Password changed successfully');
+          document.getElementById('current-password').value = '';
+          document.getElementById('new-password').value = '';
+          document.getElementById('confirm-password').value = '';
+        } else {
+          const data = await res.json();
+          showToast(data.error || 'Failed to change password', 'error');
+        }
+      } catch (err) {
+        showToast('Failed to change password', 'error');
+      }
+    }
+    
+    // Load orders
+    async function loadOrders() {
+      try {
+        const filter = document.getElementById('order-filter')?.value || '';
+        const url = filter ? `/api/admin/orders?status=${filter}` : '/api/admin/orders';
+        const res = await fetch(url);
+        orders = await res.json();
+        
+        renderOrders();
+        updateStats();
+      } catch (err) {
+        showToast('Failed to load orders', 'error');
+      }
+    }
+    
+    function renderOrders() {
+      const recentBody = document.getElementById('recent-orders');
+      const allBody = document.getElementById('all-orders');
+      
+      if (orders.length === 0) {
+        recentBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted)">No orders yet</td></tr>';
+        allBody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--text-muted)">No orders yet</td></tr>';
+        return;
+      }
+      
+      // Recent orders (first 5)
+      recentBody.innerHTML = orders.slice(0, 5).map(o => `
+        <tr onclick="viewOrder('${o.id}')" style="cursor:pointer">
+          <td>${o.id.slice(0, 8)}...</td>
+          <td>${o.type}</td>
+          <td>${o.fromAmount} ${o.fromCcy}</td>
+          <td>${o.toAmount} ${o.toCcy}</td>
+          <td><span class="status-badge status-${o.status}">${o.status.replace('_', ' ')}</span></td>
+          <td>${new Date(o.createdAt).toLocaleString()}</td>
+        </tr>
+      `).join('');
+      
+      // All orders
+      allBody.innerHTML = orders.map(o => `
+        <tr>
+          <td>${o.id.slice(0, 8)}...</td>
+          <td>${o.type}</td>
+          <td>${o.fromAmount} ${o.fromCcy}</td>
+          <td title="${o.toAddress || ''}">${o.toAddress ? o.toAddress.slice(0, 15) + '...' : '-'}</td>
+          <td><span class="status-badge status-${o.status}">${o.status.replace('_', ' ')}</span></td>
+          <td>${new Date(o.createdAt).toLocaleString()}</td>
+          <td>
+            <button class="btn btn-outline" onclick="viewOrder('${o.id}')" style="padding:6px 12px; font-size:0.8rem">View</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+    
+    function updateStats() {
+      const pending = orders.filter(o => o.status === 'awaiting_payment' || o.status === 'payment_submitted').length;
+      const processing = orders.filter(o => o.status === 'processing').length;
+      const today = new Date().toDateString();
+      const completed = orders.filter(o => o.status === 'completed' && new Date(o.createdAt).toDateString() === today).length;
+      
+      document.getElementById('stat-pending').textContent = pending;
+      document.getElementById('stat-processing').textContent = processing;
+      document.getElementById('stat-completed').textContent = completed;
+      document.getElementById('stat-total').textContent = orders.length;
+    }
+    
+    function viewOrder(id) {
+      currentOrderId = id;
+      const order = orders.find(o => o.id === id);
+      if (!order) return;
+      
+      const content = document.getElementById('order-detail-content');
+      content.innerHTML = `
+        <div style="margin-bottom:15px">
+          <strong>Order ID:</strong> ${order.id}
+        </div>
+        <div style="margin-bottom:15px">
+          <strong>Type:</strong> ${order.type}
+        </div>
+        <div style="margin-bottom:15px">
+          <strong>Status:</strong> <span class="status-badge status-${order.status}">${order.status.replace('_', ' ')}</span>
+        </div>
+        <div style="margin-bottom:15px">
+          <strong>From:</strong> ${order.fromAmount} ${order.fromCcy}
+        </div>
+        <div style="margin-bottom:15px">
+          <strong>To:</strong> ${order.toAmount} ${order.toCcy}
+        </div>
+        <div style="margin-bottom:15px">
+          <strong>Destination:</strong><br>
+          <code style="font-size:0.85rem; word-break:break-all">${order.toAddress || 'N/A'}</code>
+        </div>
+        ${order.transactionId ? `
+        <div style="margin-bottom:15px">
+          <strong>Payment Transaction ID:</strong><br>
+          <code style="font-size:0.85rem">${order.transactionId}</code>
+        </div>
+        ` : ''}
+        <div style="margin-bottom:15px">
+          <strong>Created:</strong> ${new Date(order.createdAt).toLocaleString()}
+        </div>
+        ${order.paymentSubmittedAt ? `
+        <div style="margin-bottom:15px">
+          <strong>Payment Submitted:</strong> ${new Date(order.paymentSubmittedAt).toLocaleString()}
+        </div>
+        ` : ''}
+      `;
+      
+      // Show/hide action buttons based on status
+      const approveBtn = document.getElementById('approve-btn');
+      const rejectBtn = document.getElementById('reject-btn');
+      
+      if (order.status === 'payment_submitted' && order.type === 'fiat-to-crypto') {
+        approveBtn.style.display = 'inline-block';
+        rejectBtn.style.display = 'inline-block';
+      } else {
+        approveBtn.style.display = 'none';
+        rejectBtn.style.display = 'none';
+      }
+      
+      document.getElementById('order-modal').classList.add('show');
+    }
+    
+    function closeModal() {
+      document.getElementById('order-modal').classList.remove('show');
+      currentOrderId = null;
+    }
+    
+    async function approveOrder() {
+      if (!currentOrderId) return;
+      
+      try {
+        const res = await fetch(`/api/admin/orders/${currentOrderId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: 'approved' })
+        });
+        
+        if (res.ok) {
+          showToast('Order approved and processing');
+          closeModal();
+          loadOrders();
+        } else {
+          throw new Error('Failed');
+        }
+      } catch (err) {
+        showToast('Failed to approve order', 'error');
+      }
+    }
+    
+    async function rejectOrder() {
+      if (!currentOrderId) return;
+      
+      if (!confirm('Are you sure you want to reject this order?')) return;
+      
+      try {
+        const res = await fetch(`/api/admin/orders/${currentOrderId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: 'cancelled', notes: 'Rejected by admin' })
+        });
+        
+        if (res.ok) {
+          showToast('Order rejected');
+          closeModal();
+          loadOrders();
+        } else {
+          throw new Error('Failed');
+        }
+      } catch (err) {
+        showToast('Failed to reject order', 'error');
+      }
+    }
+    
+    async function logout() {
+      await fetch('/api/admin/logout', { method: 'POST' });
+      window.location.href = '/';
+    }
+    
+    function refreshData() {
+      loadConfig();
+      loadOrders();
+      showToast('Data refreshed');
+    }
+    
+    // Order filter change
+    document.getElementById('order-filter')?.addEventListener('change', loadOrders);
+    
+    // Initialize
+    loadConfig();
+    loadOrders();
+    
+    // Auto-refresh every 30 seconds
+    setInterval(loadOrders, 30000);
+  </script>
+</body>
+</html>
