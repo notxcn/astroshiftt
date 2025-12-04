@@ -1206,6 +1206,65 @@
         display: none;
       }
     }
+
+    /* --- LIVE PRICE TICKER --- */
+    .price-ticker {
+      background: rgba(10, 12, 25, 0.95);
+      border-bottom: 1px solid var(--border-color);
+      padding: 10px 0;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .ticker-track {
+      display: flex;
+      gap: 40px;
+      animation: scroll-ticker 40s linear infinite;
+      white-space: nowrap;
+    }
+
+    .ticker-track:hover {
+      animation-play-state: paused;
+    }
+
+    @keyframes scroll-ticker {
+      0% {
+        transform: translateX(0);
+      }
+
+      100% {
+        transform: translateX(-50%);
+      }
+    }
+
+    .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+    }
+
+    .ticker-symbol {
+      font-weight: 700;
+      color: white;
+    }
+
+    .ticker-price {
+      color: var(--text-muted);
+    }
+
+    .ticker-change {
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .ticker-change.up {
+      color: #2ed573;
+    }
+
+    .ticker-change.down {
+      color: #ff4757;
+    }
   </style>
 </head>
 
@@ -1234,6 +1293,13 @@
       </div>
     </div>
   </header>
+
+  <!-- Live Price Ticker -->
+  <div class="price-ticker">
+    <div class="ticker-track" id="tickerTrack">
+      <!-- Prices will be injected here -->
+    </div>
+  </div>
 
   <main>
     <section class="hero">
@@ -1990,6 +2056,54 @@
       checkAuth();
       window.location.href = '/';
     }
+
+    // Live Price Ticker
+    const tickerCoins = [
+      { id: 'bitcoin', symbol: 'BTC' },
+      { id: 'ethereum', symbol: 'ETH' },
+      { id: 'tether', symbol: 'USDT' },
+      { id: 'binancecoin', symbol: 'BNB' },
+      { id: 'solana', symbol: 'SOL' },
+      { id: 'ripple', symbol: 'XRP' },
+      { id: 'cardano', symbol: 'ADA' },
+      { id: 'dogecoin', symbol: 'DOGE' }
+    ];
+
+    async function fetchPrices() {
+      try {
+        const ids = tickerCoins.map(c => c.id).join(',');
+        const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`);
+        const data = await res.json();
+
+        let html = '';
+        tickerCoins.forEach(coin => {
+          const priceData = data[coin.id];
+          if (priceData) {
+            const price = priceData.usd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            const change = priceData.usd_24h_change;
+            const changeClass = change >= 0 ? 'up' : 'down';
+            const changeSymbol = change >= 0 ? '▲' : '▼';
+            html += `
+              <div class="ticker-item">
+                <span class="ticker-symbol">${coin.symbol}</span>
+                <span class="ticker-price">$${price}</span>
+                <span class="ticker-change ${changeClass}">${changeSymbol} ${Math.abs(change).toFixed(2)}%</span>
+              </div>
+            `;
+          }
+        });
+
+        // Duplicate for seamless scroll
+        const tickerTrack = document.getElementById('tickerTrack');
+        tickerTrack.innerHTML = html + html;
+      } catch (err) {
+        console.error('Failed to fetch prices:', err);
+      }
+    }
+
+    // Initial fetch and update every 60 seconds
+    fetchPrices();
+    setInterval(fetchPrices, 60000);
 
     checkAuth();
 
