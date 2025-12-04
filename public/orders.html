@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Orders - AstroShift</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><defs><radialGradient id=%22grad%22 cx=%2230%25%22 cy=%2230%25%22 r=%2270%25%22><stop offset=%220%25%22 stop-color=%22%2300d4ff%22/><stop offset=%22100%25%22 stop-color=%22%234f7eff%22/></radialGradient></defs><circle cx=%2250%22 cy=%2250%22 r=%2240%22 fill=%22url(%23grad)%22 stroke=%22white%22 stroke-width=%222%22/></svg>">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><defs><radialGradient id=%22grad%22 cx=%2230%25%22 cy=%2230%25%22 r=%2270%25%22><stop offset=%220%25%22 stop-color=%22%2300d4ff%22/><stop offset=%22100%25%22 stop-color=%22%234f7eff%22/></radialGradient></defs><circle cx=%2250%22 cy=%2250%22 r=%2240%22 fill=%22url(%23grad)%22 stroke=%22white%22 stroke-width=%222%22/></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg-dark: #0a0b14;
       --bg-card: #12131f;
-      --border-color: rgba(255,255,255,0.08);
+      --border-color: rgba(255, 255, 255, 0.08);
       --text-primary: #ffffff;
       --text-secondary: #a0a0b0;
       --primary: #4f7eff;
@@ -20,7 +22,13 @@
       --accent-yellow: #fbbf24;
       --accent-red: #ff6b7a;
     }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
       font-family: 'Inter', sans-serif;
       background: var(--bg-dark);
@@ -31,15 +39,18 @@
 
     .stars {
       position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
       pointer-events: none;
       z-index: 0;
-      background: 
-        radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,0.3), transparent),
-        radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.2), transparent),
-        radial-gradient(1px 1px at 90px 40px, rgba(255,255,255,0.4), transparent),
-        radial-gradient(2px 2px at 130px 80px, rgba(255,255,255,0.2), transparent),
-        radial-gradient(1px 1px at 160px 120px, rgba(255,255,255,0.3), transparent);
+      background:
+        radial-gradient(2px 2px at 20px 30px, rgba(255, 255, 255, 0.3), transparent),
+        radial-gradient(2px 2px at 40px 70px, rgba(255, 255, 255, 0.2), transparent),
+        radial-gradient(1px 1px at 90px 40px, rgba(255, 255, 255, 0.4), transparent),
+        radial-gradient(2px 2px at 130px 80px, rgba(255, 255, 255, 0.2), transparent),
+        radial-gradient(1px 1px at 160px 120px, rgba(255, 255, 255, 0.3), transparent);
       background-size: 200px 200px;
     }
 
@@ -52,6 +63,7 @@
       padding: 20px 50px;
       border-bottom: 1px solid var(--border-color);
     }
+
     .logo {
       display: flex;
       align-items: center;
@@ -61,6 +73,7 @@
       color: white;
       text-decoration: none;
     }
+
     .logo-icon {
       width: 40px;
       height: 40px;
@@ -69,6 +82,7 @@
       position: relative;
       box-shadow: 0 0 15px rgba(79, 126, 255, 0.6);
     }
+
     .logo-icon::before {
       content: '';
       position: absolute;
@@ -76,27 +90,32 @@
       left: 50%;
       width: 140%;
       height: 40%;
-      border: 2px solid rgba(255,255,255,0.6);
+      border: 2px solid rgba(255, 255, 255, 0.6);
       border-radius: 50%;
       transform: translate(-50%, -50%) rotate(-30deg);
     }
+
     nav {
       display: flex;
       gap: 30px;
     }
+
     nav a {
       color: var(--text-secondary);
       text-decoration: none;
       font-size: 0.95rem;
       transition: color 0.2s;
     }
-    nav a:hover, nav a.active {
+
+    nav a:hover,
+    nav a.active {
       color: white;
     }
+
     .btn-login {
       padding: 10px 24px;
       background: transparent;
-      border: 1px solid rgba(255,255,255,0.2);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       color: white;
       border-radius: 50px;
       text-decoration: none;
@@ -104,9 +123,10 @@
       font-size: 0.9rem;
       transition: all 0.2s;
     }
+
     .btn-login:hover {
-      background: rgba(255,255,255,0.1);
-      border-color: rgba(255,255,255,0.3);
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.3);
     }
 
     main {
@@ -120,6 +140,7 @@
     .page-header {
       margin-bottom: 40px;
     }
+
     .page-header h1 {
       font-size: 2.5rem;
       font-weight: 700;
@@ -128,9 +149,11 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
+
     .page-header p {
       color: var(--text-secondary);
     }
+
     .user-email {
       color: var(--primary);
       font-weight: 500;
@@ -155,6 +178,7 @@
       cursor: pointer;
       text-decoration: none;
     }
+
     .order-card:hover {
       border-color: var(--primary);
       transform: translateY(-2px);
@@ -164,21 +188,25 @@
     .order-main {
       flex: 1;
     }
+
     .order-id {
       font-family: monospace;
       color: var(--text-secondary);
       font-size: 0.85rem;
       margin-bottom: 5px;
     }
+
     .order-amounts {
       font-size: 1.1rem;
       font-weight: 600;
       color: white;
     }
+
     .order-amounts .arrow {
       color: var(--primary);
       margin: 0 8px;
     }
+
     .order-date {
       color: var(--text-secondary);
       font-size: 0.85rem;
@@ -192,19 +220,24 @@
       font-weight: 600;
       text-transform: uppercase;
     }
+
     .status-new {
       background: rgba(251, 191, 36, 0.2);
       color: #fbbf24;
     }
+
     .status-pending {
       background: rgba(79, 126, 255, 0.2);
       color: #4f7eff;
     }
+
     .status-completed {
       background: rgba(0, 212, 170, 0.2);
       color: #00d4aa;
     }
-    .status-expired, .status-error {
+
+    .status-expired,
+    .status-error {
       background: rgba(255, 107, 122, 0.2);
       color: #ff6b7a;
     }
@@ -214,19 +247,23 @@
       padding: 60px 20px;
       color: var(--text-secondary);
     }
+
     .empty-state .icon {
       font-size: 4rem;
       margin-bottom: 20px;
       opacity: 0.5;
     }
+
     .empty-state h3 {
       color: white;
       margin-bottom: 10px;
     }
+
     .empty-state a {
       color: var(--primary);
       text-decoration: none;
     }
+
     .empty-state a:hover {
       text-decoration: underline;
     }
@@ -236,6 +273,7 @@
       padding: 60px 20px;
       color: var(--text-secondary);
     }
+
     .loading .spinner {
       width: 40px;
       height: 40px;
@@ -245,8 +283,11 @@
       animation: spin 1s linear infinite;
       margin: 0 auto 20px;
     }
+
     @keyframes spin {
-      to { transform: rotate(360deg); }
+      to {
+        transform: rotate(360deg);
+      }
     }
 
     .error-state {
@@ -256,13 +297,26 @@
     }
 
     @media (max-width: 768px) {
-      header { padding: 15px 20px; }
-      nav { display: none; }
-      .page-header h1 { font-size: 1.8rem; }
-      .order-card { flex-direction: column; align-items: flex-start; }
+      header {
+        padding: 15px 20px;
+      }
+
+      nav {
+        display: none;
+      }
+
+      .page-header h1 {
+        font-size: 1.8rem;
+      }
+
+      .order-card {
+        flex-direction: column;
+        align-items: flex-start;
+      }
     }
   </style>
 </head>
+
 <body>
   <div class="stars"></div>
 
@@ -298,7 +352,7 @@
   <script>
     const token = localStorage.getItem('astroshift_token');
     const email = localStorage.getItem('astroshift_email');
-    
+
     // Redirect if not logged in
     if (!token || !email) {
       window.location.href = '/login.html?redirect=/orders.html';
@@ -308,16 +362,16 @@
 
     async function loadOrders() {
       const content = document.getElementById('content');
-      
+
       try {
         const res = await fetch('/api/user/orders', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
         });
-        
+
         const data = await res.json();
-        
+
         if (!data.success) {
           if (res.status === 401) {
             // Token expired, redirect to login
@@ -328,8 +382,10 @@
           }
           throw new Error(data.error || 'Failed to load orders');
         }
-        
-        if (!ordersList || (Array.isArray(ordersList) && ordersList.length === 0)) {
+
+        const ordersList = data.orders || [];
+
+        if (!ordersList || ordersList.length === 0) {
           content.innerHTML = `
             <div class="empty-state">
               <div class="icon">📦</div>
@@ -339,7 +395,7 @@
           `;
           return;
         }
-        
+
         // Render orders
         let html = '<div class="orders-list">';
         for (const order of ordersList) {
@@ -351,7 +407,7 @@
             hour: '2-digit',
             minute: '2-digit'
           });
-          
+
           html += `
             <a href="/order.html?id=${order.id}" class="order-card">
               <div class="order-main">
@@ -369,7 +425,7 @@
         }
         html += '</div>';
         content.innerHTML = html;
-        
+
       } catch (error) {
         console.error('Load orders error:', error);
         content.innerHTML = `
@@ -379,11 +435,11 @@
         `;
       }
     }
-    
+
     function getStatusClass(status) {
       switch (status?.toUpperCase()) {
         case 'NEW': return 'status-new';
-        case 'PENDING': 
+        case 'PENDING':
         case 'PROCESSING':
         case 'EXCHANGE':
         case 'CONFIRMATION':
@@ -398,14 +454,15 @@
         default: return 'status-pending';
       }
     }
-    
+
     function logout() {
       localStorage.removeItem('astroshift_token');
       localStorage.removeItem('astroshift_email');
       window.location.href = '/';
     }
-    
+
     loadOrders();
   </script>
 </body>
+
 </html>
