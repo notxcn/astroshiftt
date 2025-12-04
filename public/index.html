@@ -2092,7 +2092,7 @@
     async function fetchPrices() {
       try {
         const ids = Object.values(coinGeckoMap).join(',');
-        const res = await fetch(https://api.coingecko.com/api/v3/simple/price?ids=&vs_currencies=usd);
+        const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`);
         const data = await res.json();
         Object.keys(coinGeckoMap).forEach(symbol => {
           const geckoId = coinGeckoMap[symbol];
@@ -2101,8 +2101,6 @@
           }
         });
         updateUI();
-      } catch (err) {
-        console.error('Failed to fetch prices:', err);
       } catch (err) {
         console.error('Failed to fetch prices:', err);
       }
@@ -2568,7 +2566,7 @@
     async function fetchPrices() {
       try {
         const ids = Object.values(coinGeckoMap).join(',');
-        const res = await fetch(https://api.coingecko.com/api/v3/simple/price?ids=&vs_currencies=usd);
+        const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`);
         const data = await res.json();
         Object.keys(coinGeckoMap).forEach(symbol => {
           const geckoId = coinGeckoMap[symbol];
@@ -2577,8 +2575,6 @@
           }
         });
         updateUI();
-      } catch (err) {
-        console.error('Failed to fetch prices:', err);
       } catch (err) {
         console.error('Failed to fetch prices:', err);
       }
@@ -3048,7 +3044,7 @@
     async function fetchPrices() {
       try {
         const ids = Object.values(coinGeckoMap).join(',');
-        const res = await fetch(https://api.coingecko.com/api/v3/simple/price?ids=&vs_currencies=usd);
+        const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`);
         const data = await res.json();
         Object.keys(coinGeckoMap).forEach(symbol => {
           const geckoId = coinGeckoMap[symbol];
@@ -3057,8 +3053,6 @@
           }
         });
         updateUI();
-      } catch (err) {
-        console.error('Failed to fetch prices:', err);
       } catch (err) {
         console.error('Failed to fetch prices:', err);
       }
