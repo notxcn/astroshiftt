@@ -14,6 +14,19 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
+    /* Screen Reader Only - for accessibility */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
     /* --- CSS VARIABLES & RESET --- */
     :root {
       --bg-dark: #050511;
@@ -1300,7 +1313,7 @@
     </div>
   </header>
 
-  <main>
+  <main role="main">
     <section class="hero">
       <div class="container" style="display:flex; flex-direction:column; align-items:center;">
 
@@ -1426,7 +1439,7 @@
             <div class="trusted-img-wrapper">
               <img
                 src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 300'%3E%3Cdefs%3E%3ClinearGradient id='grad1' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%234f7eff;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%2300d4ff;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='150' cy='150' r='120' fill='url(%23grad1)' opacity='0.2' /%3E%3Cg transform='translate(60,60) scale(0.6)'%3E%3Cpath fill='%23ffffff' d='M150,30C83.7,30,30,83.7,30,150s53.7,120,120,120s120-53.7,120-120S216.3,30,150,30z M150,250c-55.2,0-100-44.8-100-100S94.8,50,150,50s100,44.8,100,100S205.2,250,150,250z'/%3E%3Cpath fill='%2300d4ff' d='M150,70c-44.1,0-80,35.9-80,80s35.9,80,80,80s80-35.9,80-80S194.1,70,150,70z M150,210c-33.1,0-60-26.9-60-60s26.9-60,60-60s60,26.9,60,60S183.1,210,150,210z'/%3E%3Crect x='145' y='90' width='10' height='60' rx='5' fill='%23ffffff'/%3E%3Crect x='145' y='145' width='60' height='10' rx='5' fill='%23ffffff' transform='rotate(90 150 150)'/%3E%3Ccircle cx='150' cy='150' r='10' fill='%2300d4ff'/%3E%3Cpath fill='%23ffffff' d='M250,150c0-55.2-44.8-100-100-100v20c44.1,0,80,35.9,80,80H250z' opacity='0.5'/%3E%3C/g%3E%3C/svg%3E"
-                alt="Fast Robot" class="trusted-img">
+                alt="AstroShift fast automated exchange robot" class="trusted-img">
             </div>
             <div class="tc-title">Save time</div>
             <div class="tc-desc">Maximum exchange speed due to full automation. Quote the trade in seconds.</div>
@@ -1436,7 +1449,7 @@
             <div class="trusted-img-wrapper">
               <img
                 src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 300'%3E%3Cdefs%3E%3ClinearGradient id='grad2' x1='100%25' y1='0%25' x2='0%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%238a2be2;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23ff007a;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='150' cy='150' r='120' fill='url(%23grad2)' opacity='0.2' /%3E%3Cg transform='translate(60,60) scale(0.6)'%3E%3Cpath fill='none' stroke='%23ffffff' stroke-width='15' stroke-linecap='round' stroke-linejoin='round' d='M70,180 C70,180 120,220 180,180'/%3E%3Cpath fill='none' stroke='%23ffffff' stroke-width='15' stroke-linecap='round' stroke-linejoin='round' d='M230,120 C230,120 180,80 120,120'/%3E%3Cpolygon fill='%23ff007a' points='240,180 200,150 200,210'/%3E%3Cpolygon fill='%238a2be2' points='60,120 100,150 100,90'/%3E%3Ccircle cx='150' cy='150' r='40' fill='none' stroke='%23ffffff' stroke-width='10' opacity='0.6'/%3E%3Ctext x='150' y='165' font-family='Inter, Arial' font-size='40' fill='white' text-anchor='middle' font-weight='bold'%3E$%3C/text%3E%3C/g%3E%3C/svg%3E"
-                alt="Exchange Robot" class="trusted-img">
+                alt="AstroShift currency exchange robot" class="trusted-img">
             </div>
             <div class="tc-title">Make an exchange</div>
             <div class="tc-desc">Pick the right strategy and make favourable trades. Customers pay you directly.</div>
@@ -1446,7 +1459,7 @@
             <div class="trusted-img-wrapper">
               <img
                 src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 300'%3E%3Cdefs%3E%3ClinearGradient id='grad3' x1='0%25' y1='100%25' x2='100%25' y2='0%25'%3E%3Cstop offset='0%25' style='stop-color:%2300d632;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23f7931a;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='150' cy='150' r='120' fill='url(%23grad3)' opacity='0.2' /%3E%3Cg transform='translate(75,75) scale(0.5)'%3E%3Cpath fill='%23ffffff' d='M150,30c-66.3,0-120,53.7-120,120s53.7,120,120,120s120-53.7,120-120S216.3,30,150,30z M150,250c-55.2,0-100-44.8-100-100S94.8,50,150,50s100,44.8,100,100S205.2,250,150,250z'/%3E%3Cpath fill='%2300d632' d='M150,70c-44.1,0-80,35.9-80,80c0,44.1,35.9,80,80,80s80-35.9,80-80C230,105.9,194.1,70,150,70z'/%3E%3Ctext x='150' y='185' font-family='Inter, Arial' font-size='120' fill='white' text-anchor='middle' font-weight='bold'%3E$%3C/text%3E%3Cpath fill='%23ffffff' d='M200,220l-50,40l-50-40v-50h100V220z' opacity='0.8'/%3E%3Crect x='135' y='170' width='30' height='40' rx='5' fill='%23f7931a'/%3E%3C/g%3E%3C/svg%3E"
-                alt="Money Robot" class="trusted-img">
+                alt="AstroShift secure payment robot" class="trusted-img">
             </div>
             <div class="tc-title">Save money</div>
             <div class="tc-desc">Best exchange rates and minimum commissions. No hidden fees, ever. <span
@@ -1480,7 +1493,7 @@
                 <span class="faq-num">1</span>
                 <span class="faq-q">How can I track my order?</span>
               </div>
-              <button class="faq-btn">+</button>
+              <button class="faq-btn" aria-label="Toggle answer">+</button>
             </div>
             <div class="faq-body">
               <p>In three ways: by email (if you leave your email address), on our website (if your browser accepts
@@ -1494,7 +1507,7 @@
                 <span class="faq-num">2</span>
                 <span class="faq-q">Why can I trust you?</span>
               </div>
-              <button class="faq-btn">+</button>
+              <button class="faq-btn" aria-label="Toggle answer">+</button>
             </div>
             <div class="faq-body">
               <p>No registration and no need to share your personal details. We don't hold your funds, all exchanges
@@ -1508,7 +1521,7 @@
                 <span class="faq-num">3</span>
                 <span class="faq-q">Do you have hidden fees?</span>
               </div>
-              <button class="faq-btn">+</button>
+              <button class="faq-btn" aria-label="Toggle answer">+</button>
             </div>
             <div class="faq-body">
               <p>Honesty is our main priority, so we commit to full transparency and make all the fees clear:</p>
@@ -1835,7 +1848,7 @@
       `;
 
       recentList.prepend(row);
-      if (recentList.children.length > 7) recentList.lastChild.remove();
+      if (recentList.children.length > 10) recentList.lastChild.remove();
     }
 
     // --- FAQ TOGGLES ---
