@@ -329,7 +329,7 @@
           throw new Error(data.error || 'Failed to load orders');
         }
         
-        if (!data.orders || data.orders.length === 0) {
+        if (!ordersList || (Array.isArray(ordersList) && ordersList.length === 0)) {
           content.innerHTML = `
             <div class="empty-state">
               <div class="icon">📦</div>
@@ -342,7 +342,7 @@
         
         // Render orders
         let html = '<div class="orders-list">';
-        for (const order of data.orders) {
+        for (const order of ordersList) {
           const statusClass = getStatusClass(order.status);
           const date = new Date(order.createdAt).toLocaleDateString('en-US', {
             month: 'short',

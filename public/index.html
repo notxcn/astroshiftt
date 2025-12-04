@@ -1271,843 +1271,157 @@
     .ticker-change.down {
       color: #ff4757;
     }
-  </style>
-</head>
-
-<body>
-
-  <div class="bg-stars"></div>
-  <div class="planet-1"></div>
-  <div class="planet-2"></div>
-
-  <header class="site-header">
-    <div class="container nav-inner">
-      <div class="logo">
-        <div class="logo-icon"></div>
-        <span>AstroShift</span>
-      </div>
-      <nav class="main-nav">
-        <a href="/">Exchange</a>
-        <a href="/track.html">Track Order</a>
-        <a href="/faq.html">FAQ</a>
-        <a href="/support.html">Support</a>
-        <a href="/orders.html" id="ordersNavLink" style="display:none;">My Orders</a>
-      </nav>
-      <div id="authSection">
-        <a href="/login.html" class="btn-small" id="loginBtn">Log In</a>
-        <a href="#" class="btn-small" id="logoutBtn" style="display:none;" onclick="logout()">Log Out</a>
-      </div>
-    </div>
-  </header>
-
-  <main>
-    <section class="hero">
-      <div class="container" style="display:flex; flex-direction:column; align-items:center;">
-
-        <div class="hero-title-wrap">
-          <h1>Lightning cryptocurrency exchange</h1>
-        </div>
-
-        <div class="exchange-widget">
-
-          <div class="swap-grid">
-            <div class="input-group group-send">
-              <div class="input-top-row">
-                <span>You Send</span>
-                <span id="sendBalance" style="display:none">Bal: 0.00</span>
-              </div>
-              <div class="input-main">
-                <input type="number" id="sendAmount" class="amount-input" placeholder="0.00" value="100">
-                <button class="asset-btn" id="sendAssetBtn">
-                  <div id="sendIconWrapper"></div>
-                  <div class="asset-info">
-                    <div class="asset-symbol" id="sendSymbol">BTC</div>
-                    <div class="asset-price" id="sendPrice"></div>
-                  </div>
-                  <span class="chevron">▼</span>
-                </button>
-              </div>
-              <div class="min-amount-warning hidden" id="minWarning">
-                <span class="warning-icon">⚠</span> Minimum amount <span id="minAmountValue">$5.00</span>
-              </div>
-              <div class="rate-row">
-                <div class="rate-subtext" id="sendRateLine">1 BTC ≈ $64,000</div>
-              </div>
-            </div>
-
-            <div class="swap-arrow">
-              ⇄
-            </div>
-
-            <div class="input-group group-receive">
-              <div class="input-top-row">
-                <span>You Receive</span>
-              </div>
-              <div class="input-main">
-                <input type="text" id="receiveAmount" class="amount-input" placeholder="≈ 0.00" readonly>
-                <button class="asset-btn" id="receiveAssetBtn">
-                  <div id="receiveIconWrapper"></div>
-                  <div class="asset-info">
-                    <div class="asset-symbol" id="receiveSymbol">USDT</div>
-                    <div class="asset-price" id="receivePrice"></div>
-                  </div>
-                  <span class="chevron">▼</span>
-                </button>
-              </div>
-
-              <div class="rate-row">
-                <div class="rate-subtext" id="receiveRateLine">1 USDT ≈ $1.00</div>
-                <div class="fiat-subtext" id="receiveFiatValue">➜ ≈ $0.00</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="dest-group">
-            <div class="dest-input-container">
-              <input type="text" id="destWallet" class="dest-input" placeholder="Your wallet address" autocomplete="off"
-                autocorrect="off" autocapitalize="off" spellcheck="false" data-form-type="other">
-              <div class="dest-actions">
-                <button class="icon-btn" title="Paste" id="pasteBtn">📋</button>
-                <button class="icon-btn" title="Scan QR">📷</button>
-              </div>
-            </div>
-            <div class="address-validation hidden" id="addressValidation">
-              <span class="validation-icon"></span>
-              <span class="validation-text"></span>
-            </div>
-          </div>
-
-          <!-- Email Notification (Required) -->
-          <div class="email-notify-section">
-            <div class="email-required-wrap">
-              <label class="email-label">Email for order updates <span style="color:#ff6b7a;">*</span></label>
-              <input type="email" id="notifyEmail" class="email-input" placeholder="your@email.com" autocomplete="off"
-                autocorrect="off" autocapitalize="off" spellcheck="false" data-form-type="other" required>
-              <p class="email-hint">We'll send you order confirmations and status updates</p>
-            </div>
-          </div>
-
-          <div class="action-row">
-            <div class="toggle-group">
-              <button class="toggle-btn active" data-type="fixed" data-rate="1.0">Fixed rate (1.0%)</button>
-              <button class="toggle-btn" data-type="float" data-rate="0.5">Float rate (0.5%)</button>
-            </div>
-            <button class="btn-exchange" id="exchangeBtn">Exchange now</button>
-          </div>
-
-          <div class="fee-breakdown">
-            <span id="feeText">Total fee: <span class="fee-highlight">1.0%</span></span>
-          </div>
-
-          <!-- Error/Status Message -->
-          <div class="exchange-message hidden" id="exchangeMessage">
-            <span class="message-icon">⚠</span>
-            <span class="message-text" id="messageText">Error message here</span>
-          </div>
-
-          <div id="assetDropdown" class="dropdown-modal hidden">
-            <div class="dd-search-wrap">
-              <input type="text" id="assetSearch" class="dd-search" placeholder="Type a currency or ticker">
-            </div>
-            <div class="dd-list" id="dropdownList">
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </section>
-
-    <section class="trusted-section">
-      <div class="container">
-        <h2 class="trusted-title">Trusted since 2018</h2>
-        <div class="trusted-grid">
-
-          <div class="trusted-card">
-            <div class="trusted-img-wrapper">
-              <img
-                src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 300'%3E%3Cdefs%3E%3ClinearGradient id='grad1' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%234f7eff;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%2300d4ff;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='150' cy='150' r='120' fill='url(%23grad1)' opacity='0.2' /%3E%3Cg transform='translate(60,60) scale(0.6)'%3E%3Cpath fill='%23ffffff' d='M150,30C83.7,30,30,83.7,30,150s53.7,120,120,120s120-53.7,120-120S216.3,30,150,30z M150,250c-55.2,0-100-44.8-100-100S94.8,50,150,50s100,44.8,100,100S205.2,250,150,250z'/%3E%3Cpath fill='%2300d4ff' d='M150,70c-44.1,0-80,35.9-80,80s35.9,80,80,80s80-35.9,80-80S194.1,70,150,70z M150,210c-33.1,0-60-26.9-60-60s26.9-60,60-60s60,26.9,60,60S183.1,210,150,210z'/%3E%3Crect x='145' y='90' width='10' height='60' rx='5' fill='%23ffffff'/%3E%3Crect x='145' y='145' width='60' height='10' rx='5' fill='%23ffffff' transform='rotate(90 150 150)'/%3E%3Ccircle cx='150' cy='150' r='10' fill='%2300d4ff'/%3E%3Cpath fill='%23ffffff' d='M250,150c0-55.2-44.8-100-100-100v20c44.1,0,80,35.9,80,80H250z' opacity='0.5'/%3E%3C/g%3E%3C/svg%3E"
-                alt="Fast Robot" class="trusted-img">
-            </div>
-            <div class="tc-title">Save time</div>
-            <div class="tc-desc">Maximum exchange speed due to full automation. Quote the trade in seconds.</div>
-          </div>
-
-          <div class="trusted-card">
-            <div class="trusted-img-wrapper">
-              <img
-                src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 300'%3E%3Cdefs%3E%3ClinearGradient id='grad2' x1='100%25' y1='0%25' x2='0%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%238a2be2;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23ff007a;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='150' cy='150' r='120' fill='url(%23grad2)' opacity='0.2' /%3E%3Cg transform='translate(60,60) scale(0.6)'%3E%3Cpath fill='none' stroke='%23ffffff' stroke-width='15' stroke-linecap='round' stroke-linejoin='round' d='M70,180 C70,180 120,220 180,180'/%3E%3Cpath fill='none' stroke='%23ffffff' stroke-width='15' stroke-linecap='round' stroke-linejoin='round' d='M230,120 C230,120 180,80 120,120'/%3E%3Cpolygon fill='%23ff007a' points='240,180 200,150 200,210'/%3E%3Cpolygon fill='%238a2be2' points='60,120 100,150 100,90'/%3E%3Ccircle cx='150' cy='150' r='40' fill='none' stroke='%23ffffff' stroke-width='10' opacity='0.6'/%3E%3Ctext x='150' y='165' font-family='Inter, Arial' font-size='40' fill='white' text-anchor='middle' font-weight='bold'%3E$%3C/text%3E%3C/g%3E%3C/svg%3E"
-                alt="Exchange Robot" class="trusted-img">
-            </div>
-            <div class="tc-title">Make an exchange</div>
-            <div class="tc-desc">Pick the right strategy and make favourable trades. Customers pay you directly.</div>
-          </div>
-
-          <div class="trusted-card">
-            <div class="trusted-img-wrapper">
-              <img
-                src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 300'%3E%3Cdefs%3E%3ClinearGradient id='grad3' x1='0%25' y1='100%25' x2='100%25' y2='0%25'%3E%3Cstop offset='0%25' style='stop-color:%2300d632;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23f7931a;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='150' cy='150' r='120' fill='url(%23grad3)' opacity='0.2' /%3E%3Cg transform='translate(75,75) scale(0.5)'%3E%3Cpath fill='%23ffffff' d='M150,30c-66.3,0-120,53.7-120,120s53.7,120,120,120s120-53.7,120-120S216.3,30,150,30z M150,250c-55.2,0-100-44.8-100-100S94.8,50,150,50s100,44.8,100,100S205.2,250,150,250z'/%3E%3Cpath fill='%2300d632' d='M150,70c-44.1,0-80,35.9-80,80c0,44.1,35.9,80,80,80s80-35.9,80-80C230,105.9,194.1,70,150,70z'/%3E%3Ctext x='150' y='185' font-family='Inter, Arial' font-size='120' fill='white' text-anchor='middle' font-weight='bold'%3E$%3C/text%3E%3Cpath fill='%23ffffff' d='M200,220l-50,40l-50-40v-50h100V220z' opacity='0.8'/%3E%3Crect x='135' y='170' width='30' height='40' rx='5' fill='%23f7931a'/%3E%3C/g%3E%3C/svg%3E"
-                alt="Money Robot" class="trusted-img">
-            </div>
-            <div class="tc-title">Save money</div>
-            <div class="tc-desc">Best exchange rates and minimum commissions. No hidden fees, ever. <span
-                class="highlight-text">We never ask for KYC.</span></div>
-          </div>
-
-        </div>
-      </div>
-    </section>
-
-    <section class="recent-section">
-      <div class="container">
-        <div class="section-header">
-          <h2 class="section-title">Recent transactions</h2>
-          <div class="section-sub">Live feed from the AstroShift network</div>
-        </div>
-        <div class="tx-table" id="recentList">
-        </div>
-      </div>
-    </section>
-
-    <section class="faq-section" id="faq">
-      <div class="container">
-        <h2 class="faq-title">FAQ</h2>
-
-        <div class="faq-list">
-
-          <div class="faq-item">
-            <div class="faq-head">
-              <div class="faq-q-wrap">
-                <span class="faq-num">1</span>
-                <span class="faq-q">How can I track my order?</span>
-              </div>
-              <button class="faq-btn">+</button>
-            </div>
-            <div class="faq-body">
-              <p>In three ways: by email (if you leave your email address), on our website (if your browser accepts
-                cookies) or by viewing the transactions in the blockchain by the links from your order.</p>
-            </div>
-          </div>
-
-          <div class="faq-item">
-            <div class="faq-head">
-              <div class="faq-q-wrap">
-                <span class="faq-num">2</span>
-                <span class="faq-q">Why can I trust you?</span>
-              </div>
-              <button class="faq-btn">+</button>
-            </div>
-            <div class="faq-body">
-              <p>No registration and no need to share your personal details. We don't hold your funds, all exchanges
-                take place instantly in fully automatic mode.</p>
-            </div>
-          </div>
-
-          <div class="faq-item">
-            <div class="faq-head">
-              <div class="faq-q-wrap">
-                <span class="faq-num">3</span>
-                <span class="faq-q">Do you have hidden fees?</span>
-              </div>
-              <button class="faq-btn">+</button>
-            </div>
-            <div class="faq-body">
-              <p>Honesty is our main priority, so we commit to full transparency and make all the fees clear:</p>
-              <div class="faq-sub">Cash App / Zelle / PayPal fees</div>
-              <p>5.5% Extra fee and as well as the rate fee</p>
-              <div class="faq-sub">Rate fees</div>
-              <p>1% if you opt for a fixed rate</p>
-              <p>0.5% if you opt for a floating rate</p>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <script>
-    // --- 1. DATA CONFIGURATION ---
-    const BASE_ICON_URL = "https://cryptologos.cc/logos/";
-    const getLogo = (id) => {
-      const map = {
-        BTC: "bitcoin-btc-logo.png", ETH: "ethereum-eth-logo.png", USDT: "tether-usdt-logo.png",
-        LTC: "litecoin-ltc-logo.png", BNB: "bnb-bnb-logo.png", XRP: "xrp-xrp-logo.png",
-        SOL: "solana-sol-logo.png", DOGE: "dogecoin-doge-logo.png", ADA: "cardano-ada-logo.png",
-        TRX: "tron-trx-logo.png", DOT: "polkadot-new-dot-logo.png", MATIC: "polygon-matic-logo.png",
-        SHIB: "shiba-inu-shib-logo.png", AVAX: "avalanche-avax-logo.png", LINK: "chainlink-link-logo.png",
-        ATOM: "cosmos-atom-logo.png", UNI: "uniswap-uni-logo.png", XMR: "monero-xmr-logo.png",
-        ETC: "ethereum-classic-etc-logo.png", XLM: "stellar-xlm-logo.png", BCH: "bitcoin-cash-bch-logo.png",
-        FIL: "filecoin-fil-logo.png", APT: "aptos-apt-logo.png", ARB: "arbitrum-arb-logo.png",
-        OP: "optimism-ethereum-op-logo.png"
-      };
-      if (map[id]) return BASE_ICON_URL + map[id] + "?v=025";
-      return null;
-    };
-
-    const ASSETS = {
-      // FIAT APPS
-      CASHAPP: { id: "CASHAPP", name: "Cash App", type: "fiat", rate: 1, color: "#00d632", popular: true },
-      ZELLE: { id: "ZELLE", name: "Zelle", type: "fiat", rate: 1, color: "#6d1ed4", popular: true },
-      PAYPAL: { id: "PAYPAL", name: "PayPal", type: "fiat", rate: 1, color: "#00457c", popular: true },
-      // CRYPTO
-      BTC: { id: "BTC", name: "Bitcoin", type: "crypto", rate: 64200, popular: true, color: "#F7931A" },
-      ETH: { id: "ETH", name: "Ethereum", type: "crypto", rate: 3200, popular: true, color: "#627EEA" },
-      USDT: { id: "USDT", name: "Tether", type: "crypto", rate: 1, popular: true, stable: true, color: "#26A17B" },
-      BNB: { id: "BNB", name: "BNB Smart Chain", type: "crypto", rate: 590, popular: true, color: "#F0B90B" },
-      SOL: { id: "SOL", name: "Solana", type: "crypto", rate: 145, popular: true, color: "#14F195" },
-      XRP: { id: "XRP", name: "XRP", type: "crypto", rate: 0.60, popular: true, color: "#23292F" },
-      USDC: { id: "USDC", name: "USDC", type: "crypto", rate: 1, popular: true, stable: true, color: "#2775CA" },
-      DOGE: { id: "DOGE", name: "Dogecoin", type: "crypto", rate: 0.16, popular: true, color: "#C2A633" },
-      ADA: { id: "ADA", name: "Cardano", type: "crypto", rate: 0.45, popular: true, color: "#0033AD" },
-      TRX: { id: "TRX", name: "Tron", type: "crypto", rate: 0.12, popular: true, color: "#FF0013" },
-      AVAX: { id: "AVAX", name: "Avalanche", type: "crypto", rate: 45, color: "#E84142" },
-      SHIB: { id: "SHIB", name: "Shiba Inu", type: "crypto", rate: 0.000025, color: "#FFA409" },
-      DOT: { id: "DOT", name: "Polkadot", type: "crypto", rate: 7.2, color: "#E6007A" },
-      LINK: { id: "LINK", name: "Chainlink", type: "crypto", rate: 16, color: "#2A5ADA" },
-      MATIC: { id: "MATIC", name: "Polygon", type: "crypto", rate: 0.7, color: "#8247E5" },
-      BCH: { id: "BCH", name: "Bitcoin Cash", type: "crypto", rate: 450, color: "#8DC351" },
-      LTC: { id: "LTC", name: "Litecoin", type: "crypto", rate: 85, color: "#345D9D" },
-      UNI: { id: "UNI", name: "Uniswap", type: "crypto", rate: 10, color: "#FF007A" },
-      APT: { id: "APT", name: "Aptos", type: "crypto", rate: 12, color: "#000000" },
-      ARB: { id: "ARB", name: "Arbitrum", type: "crypto", rate: 1.1, color: "#2D374B" },
-      OP: { id: "OP", name: "Optimism", type: "crypto", rate: 2.5, color: "#FF0420" },
-      XMR: { id: "XMR", name: "Monero", type: "crypto", rate: 120, color: "#FF6600" },
-      ETC: { id: "ETC", name: "Ethereum Classic", type: "crypto", rate: 25, color: "#328332" },
-      XLM: { id: "XLM", name: "Stellar", type: "crypto", rate: 0.11, color: "#000000" },
-      FIL: { id: "FIL", name: "Filecoin", type: "crypto", rate: 6.0, color: "#0090FF" },
-      ATOM: { id: "ATOM", name: "Cosmos", type: "crypto", rate: 9.5, color: "#2E3148" }
-    };
-
-    // Global State
-    let state = {
-      send: "CASHAPP",
-      receive: "ETH",
-      amount: 100,
-      rateType: "fixed", // 'fixed' or 'float'
-      baseRateFee: 1.0,  // 1.0% or 0.5%
-      fiatFee: 5.5       // Extra fee for CashApp/Zelle/PayPal
-    };
-
-    // --- DOM ELEMENTS ---
-    const sendInput = document.getElementById('sendAmount');
-    const recvInput = document.getElementById('receiveAmount');
-    const feeText = document.getElementById('feeText');
-    const receiveFiatValue = document.getElementById('receiveFiatValue');
-    const dropdown = document.getElementById('assetDropdown');
-    const recentList = document.getElementById('recentList');
-
-    // --- UI UPDATES ---
-    function renderIcon(containerId, asset) {
-      const container = document.getElementById(containerId);
-      container.innerHTML = '';
-      const logoUrl = getLogo(asset.id);
-      if (asset.type === 'fiat') {
-        const el = document.createElement('div');
-        el.className = "asset-icon-img icon-fiat";
-        el.style.backgroundColor = asset.color;
-        el.textContent = asset.id === 'CASHAPP' ? '$' : (asset.id === 'PAYPAL' ? 'P' : 'Z');
-        container.appendChild(el);
-      } else if (logoUrl) {
-        const img = document.createElement('img');
-        img.src = logoUrl;
-        img.className = "asset-icon-img";
-        // FIX FOR XLM IN DROPDOWN/WIDGET
-        if (asset.id === 'XLM') { img.classList.add('icon-invert'); }
-        container.appendChild(img);
-      } else {
-        const el = document.createElement('div');
-        el.className = "asset-icon-img icon-fiat";
-        el.style.backgroundColor = "#555";
-        el.textContent = asset.id[0];
-        container.appendChild(el);
+  
+    /* ===== IMPROVED MOBILE RESPONSIVENESS ===== */
+    @media (max-width: 768px) {
+      .site-header { padding: 15px 0; }
+      .main-nav { display: none; }
+      .nav-buttons { gap: 8px; }
+      .nav-btn { padding: 8px 16px; font-size: 0.85rem; }
+      
+      .hero { padding: 100px 0 40px; min-height: auto; }
+      .hero h1 { font-size: 2rem; line-height: 1.2; }
+      .hero-subtitle { font-size: 1rem; margin-bottom: 30px; }
+      
+      .exchange-panel { 
+        margin: 0 10px; 
+        padding: 20px 15px;
+        border-radius: 20px;
       }
+      
+      .amount-row { flex-direction: column; gap: 10px; }
+      .amount-input { font-size: 1.5rem; }
+      .asset-btn { padding: 8px 12px; min-width: 110px; }
+      .asset-name { font-size: 0.9rem; }
+      .asset-symbol { font-size: 0.75rem; }
+      
+      .wallet-row { flex-direction: column; gap: 10px; }
+      .wallet-input { min-width: 100%; }
+      .network-btns { width: 100%; justify-content: center; }
+      
+      .rate-toggle { flex-direction: column; gap: 10px; align-items: stretch; }
+      .toggle-btn { flex: 1; text-align: center; }
+      
+      .exchange-btn { font-size: 1rem; padding: 14px; }
+      
+      /* Transactions mobile */
+      .tx-row { 
+        grid-template-columns: 1fr; 
+        gap: 8px; 
+        padding: 15px; 
+        text-align: center;
+      }
+      .tx-time { order: 1; font-size: 0.8rem; }
+      .tx-pair { order: 0; flex-wrap: wrap; justify-content: center; }
+      .tx-status { order: 2; justify-content: center; }
+      
+      .section-header h2 { font-size: 1.5rem; }
+      
+      /* Feature cards */
+      .features-row { flex-direction: column; gap: 15px; }
+      .feature-card { padding: 20px; }
+    }
+    
+    @media (max-width: 480px) {
+      .hero h1 { font-size: 1.6rem; }
+      .exchange-panel { padding: 15px 12px; margin: 0 5px; }
+      .amount-input { font-size: 1.2rem; }
+      .asset-icon-img { width: 28px; height: 28px; }
+      .tx-asset { font-size: 0.85rem; gap: 5px; }
+      .tx-icon-sm { width: 18px; height: 18px; }
+    }
+    
+    /* ===== IMPROVED RECENT TRANSACTIONS STYLING ===== */
+    .tx-section {
+      padding: 60px 0;
+    }
+    
+    .tx-section .section-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    
+    .tx-section .section-header h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    
+    .tx-section .section-header p {
+      color: var(--text-muted);
+      font-size: 1rem;
+    }
+    
+    .tx-feed {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .tx-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(135deg, rgba(30, 32, 60, 0.8), rgba(20, 22, 50, 0.9));
+      padding: 16px 24px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.3s ease;
+    }
+    
+    .tx-row:hover {
+      background: linear-gradient(135deg, rgba(40, 42, 80, 0.9), rgba(30, 32, 60, 0.95));
+      border-color: rgba(79, 126, 255, 0.3);
+      transform: translateX(5px);
+    }
+    
+    .tx-time {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      min-width: 120px;
+    }
+    
+    .tx-pair {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      justify-content: center;
+    }
+    
+    .tx-asset {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .tx-amt {
+      font-weight: 600;
+      color: white;
+    }
+    
+    .tx-ticker {
+      font-weight: 500;
+    }
+    
+    .from-ticker { color: #fbbf24; }
+    .to-ticker { color: #4f7eff; }
+    
+    .tx-arrow {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+    
+    .tx-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--accent-cyan);
+      font-size: 0.85rem;
+      min-width: 80px;
+      justify-content: flex-end;
     }
 
-    function updateUI() {
-      const sAsset = ASSETS[state.send];
-      const rAsset = ASSETS[state.receive];
-      const sendSymbolEl = document.getElementById('sendSymbol');
-      const recvSymbolEl = document.getElementById('receiveSymbol');
-
-      sendSymbolEl.textContent = sAsset.name;
-      recvSymbolEl.textContent = rAsset.name;
-
-      if (sAsset.color) sendSymbolEl.style.color = sAsset.color;
-      else sendSymbolEl.style.color = 'white';
-
-      if (rAsset.color) recvSymbolEl.style.color = rAsset.color;
-      else recvSymbolEl.style.color = 'white';
-
-      renderIcon('sendIconWrapper', sAsset);
-      renderIcon('receiveIconWrapper', rAsset);
-
-      // Display live prices
-      const fp=(r)=>r>=1?'$'+r.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):'$'+r.toPrecision(4);
-      const sP=document.getElementById('sendPrice'),rP=document.getElementById('receivePrice');
-      if(sP)sP.textContent=sAsset.type==='fiat'?'USD':fp(sAsset.rate);
-      if(rP)rP.textContent=rAsset.type==='fiat'?'USD':fp(rAsset.rate);
-
-      const sRate = sAsset.rate.toLocaleString();
-      const rRate = rAsset.rate.toLocaleString();
-      document.getElementById('sendRateLine').textContent = `1 ${sAsset.id} ≈ $${sRate}`;
-      document.getElementById('receiveRateLine').textContent = `1 ${rAsset.id} ≈ $${rRate}`;
-
-      calculate();
-      updateFeeDisplay();
-    }
-
-    function calculate() {
-      const sAsset = ASSETS[state.send];
-      const rAsset = ASSETS[state.receive];
-      const val = parseFloat(sendInput.value) || 0;
-
-      if (val <= 0) {
-        recvInput.value = "";
-        receiveFiatValue.textContent = "➜ ≈ $0.00";
-        return;
-      }
-
-      const usdVal = val * sAsset.rate;
-      let totalFee = state.baseRateFee;
-      if (sAsset.type === 'fiat') {
-        totalFee += state.fiatFee;
-      }
-      const feeMultiplier = 1 - (totalFee / 100);
-      const valAfterFee = usdVal * feeMultiplier;
-      const finalAmt = valAfterFee / rAsset.rate;
-
-      recvInput.value = "≈ " + (finalAmt < 1 ? finalAmt.toPrecision(6) : finalAmt.toFixed(2));
-      receiveFiatValue.textContent = `➜ ≈ $${valAfterFee.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    }
-
-    function updateFeeDisplay() {
-      const sAsset = ASSETS[state.send];
-      const isFiat = sAsset.type === 'fiat';
-      let totalPct = state.baseRateFee + (isFiat ? state.fiatFee : 0);
-      let html = `Total fee: <span class="fee-highlight">${totalPct.toFixed(1)}%</span>`;
-      if (isFiat) {
-        html += ` (${state.baseRateFee}% Rate + ${state.fiatFee}% Fiat Processing)`;
-      } else {
-        html += ` (${state.rateType} rate)`;
-      }
-      feeText.innerHTML = html;
-
-      // Hide warning when switching to crypto
-      if (!isFiat && typeof minWarning !== 'undefined') {
-        minWarning.classList.add('hidden');
-      }
-    }
-
-    // --- INTERACTION LISTENERS ---
-    document.querySelectorAll('.toggle-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        state.rateType = btn.dataset.type;
-        state.baseRateFee = parseFloat(btn.dataset.rate);
-        updateUI();
-      });
-    });
-
-    // Dropdown Logic
-    let activeSide = null;
-    function buildDropdown(side) {
-      const list = document.getElementById('dropdownList');
-      list.innerHTML = '';
-      const createCategory = (title) => {
-        const div = document.createElement('div');
-        div.className = "dd-category";
-        div.textContent = title;
-        list.appendChild(div);
-      };
-      const createItem = (asset) => {
-        const row = document.createElement('div');
-        row.className = "dd-item";
-        let iconHtml = '';
-        const logo = getLogo(asset.id);
-        if (asset.type === 'fiat') {
-          iconHtml = `<div class="dd-icon icon-fiat" style="background:${asset.color}">${asset.id === 'CASHAPP' ? '$' : asset.id === 'PAYPAL' ? 'P' : 'Z'}</div>`;
-        } else if (logo) {
-          // FIX FOR XLM IN DROPDOWN LIST
-          const extraClass = asset.id === 'XLM' ? ' icon-invert' : '';
-          iconHtml = `<img src="${logo}" class="dd-icon${extraClass}">`;
-        } else {
-          iconHtml = `<div class="dd-icon icon-fiat" style="background:#555">${asset.id[0]}</div>`;
-        }
-        const colorStyle = asset.color ? `style="color:${asset.color}"` : `style="color:white"`;
-        row.innerHTML = `${iconHtml}<div class="dd-info"><span class="dd-symbol" ${colorStyle}>${asset.id}</span><span class="dd-name">${asset.name}</span></div>`;
-        row.onclick = () => {
-          if (side === 'send') state.send = asset.id;
-          else state.receive = asset.id;
-          dropdown.classList.add('hidden');
-          updateUI();
-          checkMinimum();
-        };
-        list.appendChild(row);
-      };
-      const allAssets = Object.values(ASSETS);
-      createCategory("Popular & Fiat");
-      allAssets.filter(a => a.popular || a.type === 'fiat').forEach(a => {
-        if (side === 'receive' && a.type === 'fiat') return;
-        createItem(a);
-      });
-      createCategory("All Cryptocurrencies");
-      allAssets.filter(a => a.type === 'crypto' && !a.popular).forEach(a => createItem(a));
-    }
-
-    const sendBtn = document.getElementById('sendAssetBtn');
-    const recvBtn = document.getElementById('receiveAssetBtn');
-    const toggleDropdown = (side) => {
-      activeSide = side;
-      buildDropdown(side);
-      if (side === 'send') {
-        dropdown.style.left = '30px'; dropdown.style.right = 'auto';
-      } else {
-        dropdown.style.right = '30px'; dropdown.style.left = 'auto';
-      }
-      dropdown.classList.remove('hidden');
-    };
-    sendBtn.onclick = (e) => { e.stopPropagation(); toggleDropdown('send'); };
-    recvBtn.onclick = (e) => { e.stopPropagation(); toggleDropdown('receive'); };
-    document.addEventListener('click', (e) => {
-      if (!dropdown.contains(e.target)) dropdown.classList.add('hidden');
-    });
-
-    // --- LIVE TRANSACTIONS ---
-    const fiatKeys = ['CASHAPP', 'ZELLE', 'PAYPAL'];
-    const cryptoKeys = Object.keys(ASSETS).filter(k => {
-      const a = ASSETS[k];
-      return a.type === 'crypto' && !a.stable;
-    });
-
-    function addTransaction() {
-      const isFiatSource = Math.random() < 0.7;
-      let sourceKey;
-      if (isFiatSource) {
-        sourceKey = fiatKeys[Math.floor(Math.random() * fiatKeys.length)];
-      } else {
-        sourceKey = cryptoKeys[Math.floor(Math.random() * cryptoKeys.length)];
-      }
-      let destKey = cryptoKeys[Math.floor(Math.random() * cryptoKeys.length)];
-      while (sourceKey === destKey) destKey = cryptoKeys[Math.floor(Math.random() * cryptoKeys.length)];
-
-      const sA = ASSETS[sourceKey];
-      let amtString;
-      if (sA.type === 'fiat') {
-        const val = Math.floor(Math.random() * 4900) + 100;
-        amtString = val.toLocaleString();
-      } else {
-        const val = (Math.random() * (1000 / sA.rate));
-        amtString = val.toFixed(4);
-      }
-
-      const time = "Just now";
-      const seconds = Math.floor(Math.random() * 30) + 2;
-      const row = document.createElement('div');
-      row.className = 'tx-row';
-
-      const getImg = (id) => {
-        const a = ASSETS[id];
-        if (a.type === 'fiat') {
-          return `<div class="tx-icon-fiat" style="background:${a.color}">${a.id === 'CASHAPP' ? '$' : a.id === 'PAYPAL' ? 'P' : 'Z'}</div>`;
-        }
-        // FIX FOR XLM IN TRANSACTIONS LIST
-        const extraClass = id === 'XLM' ? ' icon-invert' : '';
-        return `<img src="${getLogo(id)}" class="tx-icon-sm${extraClass}">`;
-      };
-      const getColorStyle = (id) => {
-        const a = ASSETS[id];
-        return a.color ? `style="color:${a.color}"` : '';
-      }
-
-      row.innerHTML = `
-        <div class="tx-time">${time}</div>
-        <div class="tx-pair">
-          <div class="tx-asset">
-            ${getImg(sourceKey)} <span class="tx-amt">${amtString}</span> <span class="tx-ticker" ${getColorStyle(sourceKey)}>${sourceKey}</span>
-          </div>
-          <div class="tx-arrow">➜</div>
-          <div class="tx-asset">
-            ${getImg(destKey)} <span class="tx-ticker" ${getColorStyle(destKey)}>${destKey}</span>
-          </div>
-        </div>
-        <div class="tx-status">⏱ ${seconds} sec</div>
-      `;
-
-      recentList.prepend(row);
-      if (recentList.children.length > 7) recentList.lastChild.remove();
-    }
-
-    // --- FAQ TOGGLES ---
-    document.querySelectorAll('.faq-head').forEach(head => {
-      head.addEventListener('click', () => {
-        const item = head.parentElement;
-        const isActive = item.classList.contains('active');
-        document.querySelectorAll('.faq-item').forEach(i => {
-          i.classList.remove('active');
-          i.querySelector('.faq-body').style.maxHeight = null;
-        });
-        if (!isActive) {
-          item.classList.add('active');
-          const body = item.querySelector('.faq-body');
-          body.style.maxHeight = body.scrollHeight + "px";
-        }
-      });
-    });
-
-    // --- MINIMUM AMOUNT WARNING SETUP ---
-    const minWarning = document.getElementById('minWarning');
-    const minAmountValue = document.getElementById('minAmountValue');
-    const FIAT_MINIMUM = 5;
-
-    function checkMinimum() {
-      const sAsset = ASSETS[state.send];
-      const amount = parseFloat(sendInput.value) || 0;
-
-      if (sAsset.type === 'fiat') {
-        minAmountValue.textContent = '$' + FIAT_MINIMUM + '.00';
-        if (amount > 0 && amount < FIAT_MINIMUM) {
-          minWarning.classList.remove('hidden');
-          return false;
-        }
-      }
-      minWarning.classList.add('hidden');
-      return true;
-    }
-
-    // --- EMAIL INPUT ---
-    const notifyEmail = document.getElementById('notifyEmail');
-
-    // --- ADDRESS VALIDATION ---
-    const addressValidation = document.getElementById('addressValidation');
-    const destWalletInput = document.getElementById('destWallet');
-    let validationTimeout;
-
-    async function validateAddress() {
-      const address = destWalletInput.value.trim();
-      const currency = state.receive;
-
-      if (!address) {
-        addressValidation.classList.add('hidden');
-        return;
-      }
-
-      try {
-        const res = await fetch('/api/validate-address', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ address, currency })
-        });
-        const result = await res.json();
-
-        addressValidation.classList.remove('hidden', 'valid', 'invalid');
-        if (result.valid) {
-          addressValidation.classList.add('valid');
-          addressValidation.innerHTML = '<span class="validation-icon">✓</span><span>Valid ' + currency + ' address</span>';
-        } else {
-          addressValidation.classList.add('invalid');
-          addressValidation.innerHTML = '<span class="validation-icon">✗</span><span>Invalid ' + currency + ' address format</span>';
-        }
-      } catch (err) {
-        addressValidation.classList.add('hidden');
-      }
-    }
-
-    destWalletInput.addEventListener('input', () => {
-      clearTimeout(validationTimeout);
-      validationTimeout = setTimeout(validateAddress, 500);
-    });
-
-    // --- PASTE BUTTON ---
-    document.getElementById('pasteBtn').addEventListener('click', async () => {
-      try {
-        const text = await navigator.clipboard.readText();
-        destWalletInput.value = text;
-        validateAddress();
-      } catch (err) {
-        console.log('Paste failed:', err);
-      }
-    });
-
-    // Listen for input changes - recalculate on every keystroke
-    sendInput.addEventListener('input', () => {
-      state.amount = parseFloat(sendInput.value);
-      calculate();
-      checkMinimum();
-    });
-
-    // --- INIT ---
-    updateUI();
-    addTransaction(); addTransaction(); addTransaction();
-    setInterval(addTransaction, 120000);
-
-    // --- EXCHANGE BUTTON HANDLER ---
-    const exchangeBtn = document.getElementById('exchangeBtn');
-    const destWallet = document.getElementById('destWallet');
-    const exchangeMessage = document.getElementById('exchangeMessage');
-    const messageText = document.getElementById('messageText');
-
-    function showMessage(text, type = 'error') {
-      messageText.textContent = text;
-      exchangeMessage.className = 'exchange-message ' + type;
-      exchangeMessage.classList.remove('hidden');
-
-      // Auto-hide after 5 seconds
-      setTimeout(() => {
-        exchangeMessage.classList.add('hidden');
-      }, 5000);
-    }
-
-    function hideMessage() {
-      exchangeMessage.classList.add('hidden');
-    }
-
-    exchangeBtn.addEventListener('click', async (e) => {
-      e.preventDefault();
-      hideMessage();
-      console.log('Exchange button clicked');
-
-      const sAsset = ASSETS[state.send];
-      const rAsset = ASSETS[state.receive];
-      const amount = parseFloat(sendInput.value);
-      const toAddress = destWallet.value.trim();
-
-      console.log('Order details:', { send: state.send, receive: state.receive, amount, toAddress });
-
-      // Validation
-      if (!amount || amount <= 0) {
-        showMessage('Please enter a valid amount', 'warning');
-        return;
-      }
-
-      // Check minimum for fiat (show warning, don't proceed)
-      if (sAsset.type === 'fiat' && amount < FIAT_MINIMUM) {
-        checkMinimum();
-        return;
-      }
-
-      if (!toAddress) {
-        showMessage('Please enter your wallet address', 'warning');
-        return;
-      }
-
-      // Email is required
-      const email = notifyEmail.value.trim();
-      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        showMessage('Please enter a valid email address for order updates', 'warning');
-        notifyEmail.focus();
-        return;
-      }
-
-      // Disable button during processing
-      exchangeBtn.disabled = true;
-      exchangeBtn.textContent = 'Processing...';
-
-      try {
-        console.log('Sending request to /api/order/create');
-        const orderData = {
-          fromCcy: state.send,
-          toCcy: state.receive,
-          amount: amount.toString(),
-          toAddress: toAddress,
-          type: state.rateType,
-          email: email
-        };
-
-        const res = await fetch('/api/order/create', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(orderData)
-        });
-
-        console.log('Response status:', res.status);
-        const result = await res.json();
-        console.log('Response data:', result);
-
-        if (result.code === 0 && result.data) {
-          // Redirect to order page
-          window.location.href = `/order.html?id=${result.data.id}`;
-        } else {
-          showMessage(result.error || result.msg || 'Failed to create order. Please try again.');
-        }
-      } catch (err) {
-        console.error('Exchange error:', err);
-        showMessage('Connection error. Please try again.');
-      } finally {
-        exchangeBtn.disabled = false;
-        exchangeBtn.textContent = 'Exchange now';
-      }
-    });
-
-    // --- AUTH CHECK ---
-    function checkAuth() {
-      const token = localStorage.getItem('astroshift_token');
-      const loginBtn = document.getElementById('loginBtn');
-      const logoutBtn = document.getElementById('logoutBtn');
-      const ordersNavLink = document.getElementById('ordersNavLink');
-
-      if (token) {
-        loginBtn.style.display = 'none';
-        logoutBtn.style.display = 'inline-block';
-        ordersNavLink.style.display = 'inline';
-      } else {
-        loginBtn.style.display = 'inline-block';
-        logoutBtn.style.display = 'none';
-        ordersNavLink.style.display = 'none';
-      }
-    }
-
-    function logout() {
-      localStorage.removeItem('astroshift_token');
-      localStorage.removeItem('astroshift_email');
-      checkAuth();
-      window.location.href = '/';
-    }
-
-    // CoinGecko mapping
-    const coinGeckoMap = {
-      BTC:'bitcoin',ETH:'ethereum',USDT:'tether',BNB:'binancecoin',
-      SOL:'solana',XRP:'ripple',USDC:'usd-coin',DOGE:'dogecoin',
-      ADA:'cardano',TRX:'tron',AVAX:'avalanche-2',SHIB:'shiba-inu',
-      DOT:'polkadot',LINK:'chainlink',MATIC:'matic-network',
-      BCH:'bitcoin-cash',LTC:'litecoin',UNI:'uniswap',APT:'aptos',
-      ARB:'arbitrum',OP:'optimism',XMR:'monero',ETC:'ethereum-classic',
-      XLM:'stellar',FIL:'filecoin',ATOM:'cosmos'
-    };
-
-    async function fetchPrices() {
-      try {
-        const ids = Object.values(coinGeckoMap).join(',');
-        const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`);
-        const data = await res.json();
-        Object.keys(coinGeckoMap).forEach(sym => {
-          const gid = coinGeckoMap[sym];
-          if (data[gid] && data[gid].usd && ASSETS[sym]) ASSETS[sym].rate = data[gid].usd;
-        });
-        updateUI();
-      } catch (e) {
-        console.error('Price fetch error:', e);
-      }
-    }
-
-    // Initial fetch and update every 60 seconds
-    fetchPrices();
-    setInterval(fetchPrices, 60000);
-
-    checkAuth();
-
-
-  </script>
-
-  <footer
-    style="text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.9rem; border-top: 1px solid var(--border-color); margin-top: 60px;">
-    <div style="margin-bottom: 20px;">
-      <a href="/terms.html" style="color: inherit; text-decoration: none; margin: 0 10px;">Terms of Service</a>
-      <a href="/privacy.html" style="color: inherit; text-decoration: none; margin: 0 10px;">Privacy Policy</a>
-      <a href="/risk.html" style="color: inherit; text-decoration: none; margin: 0 10px;">Risk Disclosure</a>
-    </div>
-    <p>&copy; 2025 AstroShift. All rights reserved.</p>
-  </footer>
-</body>
-
-</html>
+</style>

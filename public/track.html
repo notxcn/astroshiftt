@@ -533,5 +533,26 @@
       }
     });
   </script>
+
+  <script>
+    function checkAuth() {
+      const token = localStorage.getItem('astroshift_token');
+      const loginBtn = document.getElementById('loginBtn');
+      const logoutBtn = document.getElementById('logoutBtn');
+      if (token) {
+        if(loginBtn) loginBtn.style.display = 'none';
+        if(logoutBtn) logoutBtn.style.display = 'inline-block';
+      } else {
+        if(loginBtn) loginBtn.style.display = 'inline-block';
+        if(logoutBtn) logoutBtn.style.display = 'none';
+      }
+    }
+    function logout() {
+      localStorage.removeItem('astroshift_token');
+      localStorage.removeItem('astroshift_email');
+      window.location.href = '/';
+    }
+    checkAuth();
+  </script>
 </body>
 </html>
