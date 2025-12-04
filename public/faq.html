@@ -274,6 +274,7 @@
       <a href="/">Exchange</a>
       <a href="/track.html">Track Order</a>
       <a href="/faq.html" class="active">FAQ</a>
+      <a href="/orders.html" id="ordersNavLink" style="display:none">My Orders</a>
       <a href="/support.html">Support</a>
     </nav>
     <a href="/login.html" class="btn-login">Log In</a>
@@ -706,12 +707,15 @@
       const token = localStorage.getItem('astroshift_token');
       const loginBtn = document.getElementById('loginBtn');
       const logoutBtn = document.getElementById('logoutBtn');
+      const ordersLink = document.getElementById('ordersNavLink');
       if (token) {
         if(loginBtn) loginBtn.style.display = 'none';
         if(logoutBtn) logoutBtn.style.display = 'inline-block';
+        if(ordersLink) ordersLink.style.display = 'inline';
       } else {
         if(loginBtn) loginBtn.style.display = 'inline-block';
         if(logoutBtn) logoutBtn.style.display = 'none';
+        if(ordersLink) ordersLink.style.display = 'none';
       }
     }
     function logout() {
