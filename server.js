@@ -536,8 +536,12 @@ app.get('/api/user/orders', async (req, res) => {
     return res.status(401).json({ error: 'Invalid or expired token' });
   }
 
+  // Use case-insensitive email matching
   const userOrdersList = await Order.findAll({
-    where: { email: session.email },
+    where: sequelize.where(
+      sequelize.fn('LOWER', sequelize.col('email')),
+      session.email.toLowerCase()
+    ),
     order: [['createdAt', 'DESC']]
   });
 
