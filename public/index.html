@@ -357,9 +357,23 @@
       line-height: 1.1;
     }
 
+    .asset-price {
+      font-size: 0.75rem;
+      color: var(--accent-cyan);
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
     .asset-symbol {
       font-weight: 700;
       font-size: 1rem;
+    }
+
+    .asset-price {
+      font-size: 0.75rem;
+      color: var(--accent-cyan);
+      font-weight: 500;
+      margin-top: 2px;
     }
 
     .chevron {
@@ -1316,6 +1330,8 @@
                   <div id="sendIconWrapper"></div>
                   <div class="asset-info">
                     <div class="asset-symbol" id="sendSymbol">BTC</div>
+                    <div class="asset-price" id="sendPrice">Loading...</div>
+                    <div class="asset-price" id="sendPrice">Loading...</div>
                   </div>
                   <span class="chevron">▼</span>
                 </button>
@@ -1342,6 +1358,8 @@
                   <div id="receiveIconWrapper"></div>
                   <div class="asset-info">
                     <div class="asset-symbol" id="receiveSymbol">USDT</div>
+                    <div class="asset-price" id="receivePrice">Loading...</div>
+                    <div class="asset-price" id="receivePrice">Loading...</div>
                   </div>
                   <span class="chevron">▼</span>
                 </button>
@@ -1632,6 +1650,16 @@
 
       renderIcon('sendIconWrapper', sAsset);
       renderIcon('receiveIconWrapper', rAsset);
+
+      // Display live prices
+      const fp = (r) => r >= 1 ? '
+
+      // Display live prices
+      const fp = (r) => r >= 1 ? '$' + r.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}) : '$' + r.toPrecision(4);
+      const sp = document.getElementById('sendPrice');
+      const rp = document.getElementById('receivePrice');
+      if (sp) sp.textContent = sAsset.type === 'fiat' ? 'USD' : fp(sAsset.rate);
+      if (rp) rp.textContent = rAsset.type === 'fiat' ? 'USD' : fp(rAsset.rate);
 
       const sRate = sAsset.rate.toLocaleString();
       const rRate = rAsset.rate.toLocaleString();
@@ -2050,45 +2078,987 @@
       window.location.href = '/';
     }
 
-    // Live Price Ticker
-    const tickerCoins = [
-      { id: 'bitcoin', symbol: 'BTC' },
-      { id: 'ethereum', symbol: 'ETH' },
-      { id: 'tether', symbol: 'USDT' },
-      { id: 'binancecoin', symbol: 'BNB' },
-      { id: 'solana', symbol: 'SOL' },
-      { id: 'ripple', symbol: 'XRP' },
-      { id: 'cardano', symbol: 'ADA' },
-      { id: 'dogecoin', symbol: 'DOGE' }
-    ];
+    // CoinGecko ID mapping
+    const coinGeckoMap = {
+      BTC: 'bitcoin', ETH: 'ethereum', USDT: 'tether', BNB: 'binancecoin',
+      SOL: 'solana', XRP: 'ripple', USDC: 'usd-coin', DOGE: 'dogecoin',
+      ADA: 'cardano', TRX: 'tron', AVAX: 'avalanche-2', SHIB: 'shiba-inu',
+      DOT: 'polkadot', LINK: 'chainlink', MATIC: 'matic-network',
+      BCH: 'bitcoin-cash', LTC: 'litecoin', UNI: 'uniswap', APT: 'aptos',
+      ARB: 'arbitrum', OP: 'optimism', XMR: 'monero', ETC: 'ethereum-classic',
+      XLM: 'stellar', FIL: 'filecoin', ATOM: 'cosmos'
+    };
 
     async function fetchPrices() {
       try {
-        const ids = tickerCoins.map(c => c.id).join(',');
-        const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`);
+        const ids = Object.values(coinGeckoMap).join(',');
+        const res = await fetch(https://api.coingecko.com/api/v3/simple/price?ids=&vs_currencies=usd);
         const data = await res.json();
-
-        let html = '';
-        tickerCoins.forEach(coin => {
-          const priceData = data[coin.id];
-          if (priceData) {
-            const price = priceData.usd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            const change = priceData.usd_24h_change;
-            const changeClass = change >= 0 ? 'up' : 'down';
-            const changeSymbol = change >= 0 ? '▲' : '▼';
-            html += `
-              <div class="ticker-item">
-                <span class="ticker-symbol">${coin.symbol}</span>
-                <span class="ticker-price">$${price}</span>
-                <span class="ticker-change ${changeClass}">${changeSymbol} ${Math.abs(change).toFixed(2)}%</span>
-              </div>
-            `;
+        Object.keys(coinGeckoMap).forEach(symbol => {
+          const geckoId = coinGeckoMap[symbol];
+          if (data[geckoId] && data[geckoId].usd && ASSETS[symbol]) {
+            ASSETS[symbol].rate = data[geckoId].usd;
           }
         });
+        updateUI();
+      } catch (err) {
+        console.error('Failed to fetch prices:', err);
+      } catch (err) {
+        console.error('Failed to fetch prices:', err);
+      }
+    }
 
-        // Duplicate for seamless scroll
-        const tickerTrack = document.getElementById('tickerTrack');
-        tickerTrack.innerHTML = html + html;
+    // Initial fetch and update every 60 seconds
+    fetchPrices();
+    setInterval(fetchPrices, 60000);
+
+    checkAuth();
+
+
+  </script>
+
+  <footer
+    style="text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.9rem; border-top: 1px solid var(--border-color); margin-top: 60px;">
+    <div style="margin-bottom: 20px;">
+      <a href="/terms.html" style="color: inherit; text-decoration: none; margin: 0 10px;">Terms of Service</a>
+      <a href="/privacy.html" style="color: inherit; text-decoration: none; margin: 0 10px;">Privacy Policy</a>
+      <a href="/risk.html" style="color: inherit; text-decoration: none; margin: 0 10px;">Risk Disclosure</a>
+    </div>
+    <p>&copy; 2025 AstroShift. All rights reserved.</p>
+  </footer>
+</body>
+
+</html> + r.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}) : '
+
+      // Display live prices
+      const fp = (r) => r >= 1 ? '$' + r.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}) : '$' + r.toPrecision(4);
+      const sp = document.getElementById('sendPrice');
+      const rp = document.getElementById('receivePrice');
+      if (sp) sp.textContent = sAsset.type === 'fiat' ? 'USD' : fp(sAsset.rate);
+      if (rp) rp.textContent = rAsset.type === 'fiat' ? 'USD' : fp(rAsset.rate);
+
+      const sRate = sAsset.rate.toLocaleString();
+      const rRate = rAsset.rate.toLocaleString();
+      document.getElementById('sendRateLine').textContent = `1 ${sAsset.id} ≈ $${sRate}`;
+      document.getElementById('receiveRateLine').textContent = `1 ${rAsset.id} ≈ $${rRate}`;
+
+      calculate();
+      updateFeeDisplay();
+    }
+
+    function calculate() {
+      const sAsset = ASSETS[state.send];
+      const rAsset = ASSETS[state.receive];
+      const val = parseFloat(sendInput.value) || 0;
+
+      if (val <= 0) {
+        recvInput.value = "";
+        receiveFiatValue.textContent = "➜ ≈ $0.00";
+        return;
+      }
+
+      const usdVal = val * sAsset.rate;
+      let totalFee = state.baseRateFee;
+      if (sAsset.type === 'fiat') {
+        totalFee += state.fiatFee;
+      }
+      const feeMultiplier = 1 - (totalFee / 100);
+      const valAfterFee = usdVal * feeMultiplier;
+      const finalAmt = valAfterFee / rAsset.rate;
+
+      recvInput.value = "≈ " + (finalAmt < 1 ? finalAmt.toPrecision(6) : finalAmt.toFixed(2));
+      receiveFiatValue.textContent = `➜ ≈ $${valAfterFee.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+
+    function updateFeeDisplay() {
+      const sAsset = ASSETS[state.send];
+      const isFiat = sAsset.type === 'fiat';
+      let totalPct = state.baseRateFee + (isFiat ? state.fiatFee : 0);
+      let html = `Total fee: <span class="fee-highlight">${totalPct.toFixed(1)}%</span>`;
+      if (isFiat) {
+        html += ` (${state.baseRateFee}% Rate + ${state.fiatFee}% Fiat Processing)`;
+      } else {
+        html += ` (${state.rateType} rate)`;
+      }
+      feeText.innerHTML = html;
+
+      // Hide warning when switching to crypto
+      if (!isFiat && typeof minWarning !== 'undefined') {
+        minWarning.classList.add('hidden');
+      }
+    }
+
+    // --- INTERACTION LISTENERS ---
+    document.querySelectorAll('.toggle-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.rateType = btn.dataset.type;
+        state.baseRateFee = parseFloat(btn.dataset.rate);
+        updateUI();
+      });
+    });
+
+    // Dropdown Logic
+    let activeSide = null;
+    function buildDropdown(side) {
+      const list = document.getElementById('dropdownList');
+      list.innerHTML = '';
+      const createCategory = (title) => {
+        const div = document.createElement('div');
+        div.className = "dd-category";
+        div.textContent = title;
+        list.appendChild(div);
+      };
+      const createItem = (asset) => {
+        const row = document.createElement('div');
+        row.className = "dd-item";
+        let iconHtml = '';
+        const logo = getLogo(asset.id);
+        if (asset.type === 'fiat') {
+          iconHtml = `<div class="dd-icon icon-fiat" style="background:${asset.color}">${asset.id === 'CASHAPP' ? '$' : asset.id === 'PAYPAL' ? 'P' : 'Z'}</div>`;
+        } else if (logo) {
+          // FIX FOR XLM IN DROPDOWN LIST
+          const extraClass = asset.id === 'XLM' ? ' icon-invert' : '';
+          iconHtml = `<img src="${logo}" class="dd-icon${extraClass}">`;
+        } else {
+          iconHtml = `<div class="dd-icon icon-fiat" style="background:#555">${asset.id[0]}</div>`;
+        }
+        const colorStyle = asset.color ? `style="color:${asset.color}"` : `style="color:white"`;
+        row.innerHTML = `${iconHtml}<div class="dd-info"><span class="dd-symbol" ${colorStyle}>${asset.id}</span><span class="dd-name">${asset.name}</span></div>`;
+        row.onclick = () => {
+          if (side === 'send') state.send = asset.id;
+          else state.receive = asset.id;
+          dropdown.classList.add('hidden');
+          updateUI();
+          checkMinimum();
+        };
+        list.appendChild(row);
+      };
+      const allAssets = Object.values(ASSETS);
+      createCategory("Popular & Fiat");
+      allAssets.filter(a => a.popular || a.type === 'fiat').forEach(a => {
+        if (side === 'receive' && a.type === 'fiat') return;
+        createItem(a);
+      });
+      createCategory("All Cryptocurrencies");
+      allAssets.filter(a => a.type === 'crypto' && !a.popular).forEach(a => createItem(a));
+    }
+
+    const sendBtn = document.getElementById('sendAssetBtn');
+    const recvBtn = document.getElementById('receiveAssetBtn');
+    const toggleDropdown = (side) => {
+      activeSide = side;
+      buildDropdown(side);
+      if (side === 'send') {
+        dropdown.style.left = '30px'; dropdown.style.right = 'auto';
+      } else {
+        dropdown.style.right = '30px'; dropdown.style.left = 'auto';
+      }
+      dropdown.classList.remove('hidden');
+    };
+    sendBtn.onclick = (e) => { e.stopPropagation(); toggleDropdown('send'); };
+    recvBtn.onclick = (e) => { e.stopPropagation(); toggleDropdown('receive'); };
+    document.addEventListener('click', (e) => {
+      if (!dropdown.contains(e.target)) dropdown.classList.add('hidden');
+    });
+
+    // --- LIVE TRANSACTIONS ---
+    const fiatKeys = ['CASHAPP', 'ZELLE', 'PAYPAL'];
+    const cryptoKeys = Object.keys(ASSETS).filter(k => {
+      const a = ASSETS[k];
+      return a.type === 'crypto' && !a.stable;
+    });
+
+    function addTransaction() {
+      const isFiatSource = Math.random() < 0.7;
+      let sourceKey;
+      if (isFiatSource) {
+        sourceKey = fiatKeys[Math.floor(Math.random() * fiatKeys.length)];
+      } else {
+        sourceKey = cryptoKeys[Math.floor(Math.random() * cryptoKeys.length)];
+      }
+      let destKey = cryptoKeys[Math.floor(Math.random() * cryptoKeys.length)];
+      while (sourceKey === destKey) destKey = cryptoKeys[Math.floor(Math.random() * cryptoKeys.length)];
+
+      const sA = ASSETS[sourceKey];
+      let amtString;
+      if (sA.type === 'fiat') {
+        const val = Math.floor(Math.random() * 4900) + 100;
+        amtString = val.toLocaleString();
+      } else {
+        const val = (Math.random() * (1000 / sA.rate));
+        amtString = val.toFixed(4);
+      }
+
+      const time = "Just now";
+      const seconds = Math.floor(Math.random() * 30) + 2;
+      const row = document.createElement('div');
+      row.className = 'tx-row';
+
+      const getImg = (id) => {
+        const a = ASSETS[id];
+        if (a.type === 'fiat') {
+          return `<div class="tx-icon-fiat" style="background:${a.color}">${a.id === 'CASHAPP' ? '$' : a.id === 'PAYPAL' ? 'P' : 'Z'}</div>`;
+        }
+        // FIX FOR XLM IN TRANSACTIONS LIST
+        const extraClass = id === 'XLM' ? ' icon-invert' : '';
+        return `<img src="${getLogo(id)}" class="tx-icon-sm${extraClass}">`;
+      };
+      const getColorStyle = (id) => {
+        const a = ASSETS[id];
+        return a.color ? `style="color:${a.color}"` : '';
+      }
+
+      row.innerHTML = `
+        <div class="tx-time">${time}</div>
+        <div class="tx-pair">
+          <div class="tx-asset">
+            ${getImg(sourceKey)} <span class="tx-amt">${amtString}</span> <span class="tx-ticker" ${getColorStyle(sourceKey)}>${sourceKey}</span>
+          </div>
+          <div class="tx-arrow">➜</div>
+          <div class="tx-asset">
+            ${getImg(destKey)} <span class="tx-ticker" ${getColorStyle(destKey)}>${destKey}</span>
+          </div>
+        </div>
+        <div class="tx-status">⏱ ${seconds} sec</div>
+      `;
+
+      recentList.prepend(row);
+      if (recentList.children.length > 7) recentList.lastChild.remove();
+    }
+
+    // --- FAQ TOGGLES ---
+    document.querySelectorAll('.faq-head').forEach(head => {
+      head.addEventListener('click', () => {
+        const item = head.parentElement;
+        const isActive = item.classList.contains('active');
+        document.querySelectorAll('.faq-item').forEach(i => {
+          i.classList.remove('active');
+          i.querySelector('.faq-body').style.maxHeight = null;
+        });
+        if (!isActive) {
+          item.classList.add('active');
+          const body = item.querySelector('.faq-body');
+          body.style.maxHeight = body.scrollHeight + "px";
+        }
+      });
+    });
+
+    // --- MINIMUM AMOUNT WARNING SETUP ---
+    const minWarning = document.getElementById('minWarning');
+    const minAmountValue = document.getElementById('minAmountValue');
+    const FIAT_MINIMUM = 5;
+
+    function checkMinimum() {
+      const sAsset = ASSETS[state.send];
+      const amount = parseFloat(sendInput.value) || 0;
+
+      if (sAsset.type === 'fiat') {
+        minAmountValue.textContent = '$' + FIAT_MINIMUM + '.00';
+        if (amount > 0 && amount < FIAT_MINIMUM) {
+          minWarning.classList.remove('hidden');
+          return false;
+        }
+      }
+      minWarning.classList.add('hidden');
+      return true;
+    }
+
+    // --- EMAIL INPUT ---
+    const notifyEmail = document.getElementById('notifyEmail');
+
+    // --- ADDRESS VALIDATION ---
+    const addressValidation = document.getElementById('addressValidation');
+    const destWalletInput = document.getElementById('destWallet');
+    let validationTimeout;
+
+    async function validateAddress() {
+      const address = destWalletInput.value.trim();
+      const currency = state.receive;
+
+      if (!address) {
+        addressValidation.classList.add('hidden');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/validate-address', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ address, currency })
+        });
+        const result = await res.json();
+
+        addressValidation.classList.remove('hidden', 'valid', 'invalid');
+        if (result.valid) {
+          addressValidation.classList.add('valid');
+          addressValidation.innerHTML = '<span class="validation-icon">✓</span><span>Valid ' + currency + ' address</span>';
+        } else {
+          addressValidation.classList.add('invalid');
+          addressValidation.innerHTML = '<span class="validation-icon">✗</span><span>Invalid ' + currency + ' address format</span>';
+        }
+      } catch (err) {
+        addressValidation.classList.add('hidden');
+      }
+    }
+
+    destWalletInput.addEventListener('input', () => {
+      clearTimeout(validationTimeout);
+      validationTimeout = setTimeout(validateAddress, 500);
+    });
+
+    // --- PASTE BUTTON ---
+    document.getElementById('pasteBtn').addEventListener('click', async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+        destWalletInput.value = text;
+        validateAddress();
+      } catch (err) {
+        console.log('Paste failed:', err);
+      }
+    });
+
+    // Listen for input changes - recalculate on every keystroke
+    sendInput.addEventListener('input', () => {
+      state.amount = parseFloat(sendInput.value);
+      calculate();
+      checkMinimum();
+    });
+
+    // --- INIT ---
+    updateUI();
+    addTransaction(); addTransaction(); addTransaction();
+    setInterval(addTransaction, 120000);
+
+    // --- EXCHANGE BUTTON HANDLER ---
+    const exchangeBtn = document.getElementById('exchangeBtn');
+    const destWallet = document.getElementById('destWallet');
+    const exchangeMessage = document.getElementById('exchangeMessage');
+    const messageText = document.getElementById('messageText');
+
+    function showMessage(text, type = 'error') {
+      messageText.textContent = text;
+      exchangeMessage.className = 'exchange-message ' + type;
+      exchangeMessage.classList.remove('hidden');
+
+      // Auto-hide after 5 seconds
+      setTimeout(() => {
+        exchangeMessage.classList.add('hidden');
+      }, 5000);
+    }
+
+    function hideMessage() {
+      exchangeMessage.classList.add('hidden');
+    }
+
+    exchangeBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      hideMessage();
+      console.log('Exchange button clicked');
+
+      const sAsset = ASSETS[state.send];
+      const rAsset = ASSETS[state.receive];
+      const amount = parseFloat(sendInput.value);
+      const toAddress = destWallet.value.trim();
+
+      console.log('Order details:', { send: state.send, receive: state.receive, amount, toAddress });
+
+      // Validation
+      if (!amount || amount <= 0) {
+        showMessage('Please enter a valid amount', 'warning');
+        return;
+      }
+
+      // Check minimum for fiat (show warning, don't proceed)
+      if (sAsset.type === 'fiat' && amount < FIAT_MINIMUM) {
+        checkMinimum();
+        return;
+      }
+
+      if (!toAddress) {
+        showMessage('Please enter your wallet address', 'warning');
+        return;
+      }
+
+      // Email is required
+      const email = notifyEmail.value.trim();
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showMessage('Please enter a valid email address for order updates', 'warning');
+        notifyEmail.focus();
+        return;
+      }
+
+      // Disable button during processing
+      exchangeBtn.disabled = true;
+      exchangeBtn.textContent = 'Processing...';
+
+      try {
+        console.log('Sending request to /api/order/create');
+        const orderData = {
+          fromCcy: state.send,
+          toCcy: state.receive,
+          amount: amount.toString(),
+          toAddress: toAddress,
+          type: state.rateType,
+          email: email
+        };
+
+        const res = await fetch('/api/order/create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(orderData)
+        });
+
+        console.log('Response status:', res.status);
+        const result = await res.json();
+        console.log('Response data:', result);
+
+        if (result.code === 0 && result.data) {
+          // Redirect to order page
+          window.location.href = `/order.html?id=${result.data.id}`;
+        } else {
+          showMessage(result.error || result.msg || 'Failed to create order. Please try again.');
+        }
+      } catch (err) {
+        console.error('Exchange error:', err);
+        showMessage('Connection error. Please try again.');
+      } finally {
+        exchangeBtn.disabled = false;
+        exchangeBtn.textContent = 'Exchange now';
+      }
+    });
+
+    // --- AUTH CHECK ---
+    function checkAuth() {
+      const token = localStorage.getItem('astroshift_token');
+      const loginBtn = document.getElementById('loginBtn');
+      const logoutBtn = document.getElementById('logoutBtn');
+      const ordersNavLink = document.getElementById('ordersNavLink');
+
+      if (token) {
+        loginBtn.style.display = 'none';
+        logoutBtn.style.display = 'inline-block';
+        ordersNavLink.style.display = 'inline';
+      } else {
+        loginBtn.style.display = 'inline-block';
+        logoutBtn.style.display = 'none';
+        ordersNavLink.style.display = 'none';
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('astroshift_token');
+      localStorage.removeItem('astroshift_email');
+      checkAuth();
+      window.location.href = '/';
+    }
+
+    // CoinGecko ID mapping
+    const coinGeckoMap = {
+      BTC: 'bitcoin', ETH: 'ethereum', USDT: 'tether', BNB: 'binancecoin',
+      SOL: 'solana', XRP: 'ripple', USDC: 'usd-coin', DOGE: 'dogecoin',
+      ADA: 'cardano', TRX: 'tron', AVAX: 'avalanche-2', SHIB: 'shiba-inu',
+      DOT: 'polkadot', LINK: 'chainlink', MATIC: 'matic-network',
+      BCH: 'bitcoin-cash', LTC: 'litecoin', UNI: 'uniswap', APT: 'aptos',
+      ARB: 'arbitrum', OP: 'optimism', XMR: 'monero', ETC: 'ethereum-classic',
+      XLM: 'stellar', FIL: 'filecoin', ATOM: 'cosmos'
+    };
+
+    async function fetchPrices() {
+      try {
+        const ids = Object.values(coinGeckoMap).join(',');
+        const res = await fetch(https://api.coingecko.com/api/v3/simple/price?ids=&vs_currencies=usd);
+        const data = await res.json();
+        Object.keys(coinGeckoMap).forEach(symbol => {
+          const geckoId = coinGeckoMap[symbol];
+          if (data[geckoId] && data[geckoId].usd && ASSETS[symbol]) {
+            ASSETS[symbol].rate = data[geckoId].usd;
+          }
+        });
+        updateUI();
+      } catch (err) {
+        console.error('Failed to fetch prices:', err);
+      } catch (err) {
+        console.error('Failed to fetch prices:', err);
+      }
+    }
+
+    // Initial fetch and update every 60 seconds
+    fetchPrices();
+    setInterval(fetchPrices, 60000);
+
+    checkAuth();
+
+
+  </script>
+
+  <footer
+    style="text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.9rem; border-top: 1px solid var(--border-color); margin-top: 60px;">
+    <div style="margin-bottom: 20px;">
+      <a href="/terms.html" style="color: inherit; text-decoration: none; margin: 0 10px;">Terms of Service</a>
+      <a href="/privacy.html" style="color: inherit; text-decoration: none; margin: 0 10px;">Privacy Policy</a>
+      <a href="/risk.html" style="color: inherit; text-decoration: none; margin: 0 10px;">Risk Disclosure</a>
+    </div>
+    <p>&copy; 2025 AstroShift. All rights reserved.</p>
+  </footer>
+</body>
+
+</html> + r.toPrecision(4);
+      const sp = document.getElementById('sendPrice');
+      const rp = document.getElementById('receivePrice');
+      if (sp) sp.textContent = sAsset.type === 'fiat' ? 'USD' : fp(sAsset.rate);
+      if (rp) rp.textContent = rAsset.type === 'fiat' ? 'USD' : fp(rAsset.rate);
+
+      // Display live prices
+      const fp = (r) => r >= 1 ? '$' + r.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}) : '$' + r.toPrecision(4);
+      const sp = document.getElementById('sendPrice');
+      const rp = document.getElementById('receivePrice');
+      if (sp) sp.textContent = sAsset.type === 'fiat' ? 'USD' : fp(sAsset.rate);
+      if (rp) rp.textContent = rAsset.type === 'fiat' ? 'USD' : fp(rAsset.rate);
+
+      const sRate = sAsset.rate.toLocaleString();
+      const rRate = rAsset.rate.toLocaleString();
+      document.getElementById('sendRateLine').textContent = `1 ${sAsset.id} ≈ $${sRate}`;
+      document.getElementById('receiveRateLine').textContent = `1 ${rAsset.id} ≈ $${rRate}`;
+
+      calculate();
+      updateFeeDisplay();
+    }
+
+    function calculate() {
+      const sAsset = ASSETS[state.send];
+      const rAsset = ASSETS[state.receive];
+      const val = parseFloat(sendInput.value) || 0;
+
+      if (val <= 0) {
+        recvInput.value = "";
+        receiveFiatValue.textContent = "➜ ≈ $0.00";
+        return;
+      }
+
+      const usdVal = val * sAsset.rate;
+      let totalFee = state.baseRateFee;
+      if (sAsset.type === 'fiat') {
+        totalFee += state.fiatFee;
+      }
+      const feeMultiplier = 1 - (totalFee / 100);
+      const valAfterFee = usdVal * feeMultiplier;
+      const finalAmt = valAfterFee / rAsset.rate;
+
+      recvInput.value = "≈ " + (finalAmt < 1 ? finalAmt.toPrecision(6) : finalAmt.toFixed(2));
+      receiveFiatValue.textContent = `➜ ≈ $${valAfterFee.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+
+    function updateFeeDisplay() {
+      const sAsset = ASSETS[state.send];
+      const isFiat = sAsset.type === 'fiat';
+      let totalPct = state.baseRateFee + (isFiat ? state.fiatFee : 0);
+      let html = `Total fee: <span class="fee-highlight">${totalPct.toFixed(1)}%</span>`;
+      if (isFiat) {
+        html += ` (${state.baseRateFee}% Rate + ${state.fiatFee}% Fiat Processing)`;
+      } else {
+        html += ` (${state.rateType} rate)`;
+      }
+      feeText.innerHTML = html;
+
+      // Hide warning when switching to crypto
+      if (!isFiat && typeof minWarning !== 'undefined') {
+        minWarning.classList.add('hidden');
+      }
+    }
+
+    // --- INTERACTION LISTENERS ---
+    document.querySelectorAll('.toggle-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.rateType = btn.dataset.type;
+        state.baseRateFee = parseFloat(btn.dataset.rate);
+        updateUI();
+      });
+    });
+
+    // Dropdown Logic
+    let activeSide = null;
+    function buildDropdown(side) {
+      const list = document.getElementById('dropdownList');
+      list.innerHTML = '';
+      const createCategory = (title) => {
+        const div = document.createElement('div');
+        div.className = "dd-category";
+        div.textContent = title;
+        list.appendChild(div);
+      };
+      const createItem = (asset) => {
+        const row = document.createElement('div');
+        row.className = "dd-item";
+        let iconHtml = '';
+        const logo = getLogo(asset.id);
+        if (asset.type === 'fiat') {
+          iconHtml = `<div class="dd-icon icon-fiat" style="background:${asset.color}">${asset.id === 'CASHAPP' ? '$' : asset.id === 'PAYPAL' ? 'P' : 'Z'}</div>`;
+        } else if (logo) {
+          // FIX FOR XLM IN DROPDOWN LIST
+          const extraClass = asset.id === 'XLM' ? ' icon-invert' : '';
+          iconHtml = `<img src="${logo}" class="dd-icon${extraClass}">`;
+        } else {
+          iconHtml = `<div class="dd-icon icon-fiat" style="background:#555">${asset.id[0]}</div>`;
+        }
+        const colorStyle = asset.color ? `style="color:${asset.color}"` : `style="color:white"`;
+        row.innerHTML = `${iconHtml}<div class="dd-info"><span class="dd-symbol" ${colorStyle}>${asset.id}</span><span class="dd-name">${asset.name}</span></div>`;
+        row.onclick = () => {
+          if (side === 'send') state.send = asset.id;
+          else state.receive = asset.id;
+          dropdown.classList.add('hidden');
+          updateUI();
+          checkMinimum();
+        };
+        list.appendChild(row);
+      };
+      const allAssets = Object.values(ASSETS);
+      createCategory("Popular & Fiat");
+      allAssets.filter(a => a.popular || a.type === 'fiat').forEach(a => {
+        if (side === 'receive' && a.type === 'fiat') return;
+        createItem(a);
+      });
+      createCategory("All Cryptocurrencies");
+      allAssets.filter(a => a.type === 'crypto' && !a.popular).forEach(a => createItem(a));
+    }
+
+    const sendBtn = document.getElementById('sendAssetBtn');
+    const recvBtn = document.getElementById('receiveAssetBtn');
+    const toggleDropdown = (side) => {
+      activeSide = side;
+      buildDropdown(side);
+      if (side === 'send') {
+        dropdown.style.left = '30px'; dropdown.style.right = 'auto';
+      } else {
+        dropdown.style.right = '30px'; dropdown.style.left = 'auto';
+      }
+      dropdown.classList.remove('hidden');
+    };
+    sendBtn.onclick = (e) => { e.stopPropagation(); toggleDropdown('send'); };
+    recvBtn.onclick = (e) => { e.stopPropagation(); toggleDropdown('receive'); };
+    document.addEventListener('click', (e) => {
+      if (!dropdown.contains(e.target)) dropdown.classList.add('hidden');
+    });
+
+    // --- LIVE TRANSACTIONS ---
+    const fiatKeys = ['CASHAPP', 'ZELLE', 'PAYPAL'];
+    const cryptoKeys = Object.keys(ASSETS).filter(k => {
+      const a = ASSETS[k];
+      return a.type === 'crypto' && !a.stable;
+    });
+
+    function addTransaction() {
+      const isFiatSource = Math.random() < 0.7;
+      let sourceKey;
+      if (isFiatSource) {
+        sourceKey = fiatKeys[Math.floor(Math.random() * fiatKeys.length)];
+      } else {
+        sourceKey = cryptoKeys[Math.floor(Math.random() * cryptoKeys.length)];
+      }
+      let destKey = cryptoKeys[Math.floor(Math.random() * cryptoKeys.length)];
+      while (sourceKey === destKey) destKey = cryptoKeys[Math.floor(Math.random() * cryptoKeys.length)];
+
+      const sA = ASSETS[sourceKey];
+      let amtString;
+      if (sA.type === 'fiat') {
+        const val = Math.floor(Math.random() * 4900) + 100;
+        amtString = val.toLocaleString();
+      } else {
+        const val = (Math.random() * (1000 / sA.rate));
+        amtString = val.toFixed(4);
+      }
+
+      const time = "Just now";
+      const seconds = Math.floor(Math.random() * 30) + 2;
+      const row = document.createElement('div');
+      row.className = 'tx-row';
+
+      const getImg = (id) => {
+        const a = ASSETS[id];
+        if (a.type === 'fiat') {
+          return `<div class="tx-icon-fiat" style="background:${a.color}">${a.id === 'CASHAPP' ? '$' : a.id === 'PAYPAL' ? 'P' : 'Z'}</div>`;
+        }
+        // FIX FOR XLM IN TRANSACTIONS LIST
+        const extraClass = id === 'XLM' ? ' icon-invert' : '';
+        return `<img src="${getLogo(id)}" class="tx-icon-sm${extraClass}">`;
+      };
+      const getColorStyle = (id) => {
+        const a = ASSETS[id];
+        return a.color ? `style="color:${a.color}"` : '';
+      }
+
+      row.innerHTML = `
+        <div class="tx-time">${time}</div>
+        <div class="tx-pair">
+          <div class="tx-asset">
+            ${getImg(sourceKey)} <span class="tx-amt">${amtString}</span> <span class="tx-ticker" ${getColorStyle(sourceKey)}>${sourceKey}</span>
+          </div>
+          <div class="tx-arrow">➜</div>
+          <div class="tx-asset">
+            ${getImg(destKey)} <span class="tx-ticker" ${getColorStyle(destKey)}>${destKey}</span>
+          </div>
+        </div>
+        <div class="tx-status">⏱ ${seconds} sec</div>
+      `;
+
+      recentList.prepend(row);
+      if (recentList.children.length > 7) recentList.lastChild.remove();
+    }
+
+    // --- FAQ TOGGLES ---
+    document.querySelectorAll('.faq-head').forEach(head => {
+      head.addEventListener('click', () => {
+        const item = head.parentElement;
+        const isActive = item.classList.contains('active');
+        document.querySelectorAll('.faq-item').forEach(i => {
+          i.classList.remove('active');
+          i.querySelector('.faq-body').style.maxHeight = null;
+        });
+        if (!isActive) {
+          item.classList.add('active');
+          const body = item.querySelector('.faq-body');
+          body.style.maxHeight = body.scrollHeight + "px";
+        }
+      });
+    });
+
+    // --- MINIMUM AMOUNT WARNING SETUP ---
+    const minWarning = document.getElementById('minWarning');
+    const minAmountValue = document.getElementById('minAmountValue');
+    const FIAT_MINIMUM = 5;
+
+    function checkMinimum() {
+      const sAsset = ASSETS[state.send];
+      const amount = parseFloat(sendInput.value) || 0;
+
+      if (sAsset.type === 'fiat') {
+        minAmountValue.textContent = '$' + FIAT_MINIMUM + '.00';
+        if (amount > 0 && amount < FIAT_MINIMUM) {
+          minWarning.classList.remove('hidden');
+          return false;
+        }
+      }
+      minWarning.classList.add('hidden');
+      return true;
+    }
+
+    // --- EMAIL INPUT ---
+    const notifyEmail = document.getElementById('notifyEmail');
+
+    // --- ADDRESS VALIDATION ---
+    const addressValidation = document.getElementById('addressValidation');
+    const destWalletInput = document.getElementById('destWallet');
+    let validationTimeout;
+
+    async function validateAddress() {
+      const address = destWalletInput.value.trim();
+      const currency = state.receive;
+
+      if (!address) {
+        addressValidation.classList.add('hidden');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/validate-address', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ address, currency })
+        });
+        const result = await res.json();
+
+        addressValidation.classList.remove('hidden', 'valid', 'invalid');
+        if (result.valid) {
+          addressValidation.classList.add('valid');
+          addressValidation.innerHTML = '<span class="validation-icon">✓</span><span>Valid ' + currency + ' address</span>';
+        } else {
+          addressValidation.classList.add('invalid');
+          addressValidation.innerHTML = '<span class="validation-icon">✗</span><span>Invalid ' + currency + ' address format</span>';
+        }
+      } catch (err) {
+        addressValidation.classList.add('hidden');
+      }
+    }
+
+    destWalletInput.addEventListener('input', () => {
+      clearTimeout(validationTimeout);
+      validationTimeout = setTimeout(validateAddress, 500);
+    });
+
+    // --- PASTE BUTTON ---
+    document.getElementById('pasteBtn').addEventListener('click', async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+        destWalletInput.value = text;
+        validateAddress();
+      } catch (err) {
+        console.log('Paste failed:', err);
+      }
+    });
+
+    // Listen for input changes - recalculate on every keystroke
+    sendInput.addEventListener('input', () => {
+      state.amount = parseFloat(sendInput.value);
+      calculate();
+      checkMinimum();
+    });
+
+    // --- INIT ---
+    updateUI();
+    addTransaction(); addTransaction(); addTransaction();
+    setInterval(addTransaction, 120000);
+
+    // --- EXCHANGE BUTTON HANDLER ---
+    const exchangeBtn = document.getElementById('exchangeBtn');
+    const destWallet = document.getElementById('destWallet');
+    const exchangeMessage = document.getElementById('exchangeMessage');
+    const messageText = document.getElementById('messageText');
+
+    function showMessage(text, type = 'error') {
+      messageText.textContent = text;
+      exchangeMessage.className = 'exchange-message ' + type;
+      exchangeMessage.classList.remove('hidden');
+
+      // Auto-hide after 5 seconds
+      setTimeout(() => {
+        exchangeMessage.classList.add('hidden');
+      }, 5000);
+    }
+
+    function hideMessage() {
+      exchangeMessage.classList.add('hidden');
+    }
+
+    exchangeBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      hideMessage();
+      console.log('Exchange button clicked');
+
+      const sAsset = ASSETS[state.send];
+      const rAsset = ASSETS[state.receive];
+      const amount = parseFloat(sendInput.value);
+      const toAddress = destWallet.value.trim();
+
+      console.log('Order details:', { send: state.send, receive: state.receive, amount, toAddress });
+
+      // Validation
+      if (!amount || amount <= 0) {
+        showMessage('Please enter a valid amount', 'warning');
+        return;
+      }
+
+      // Check minimum for fiat (show warning, don't proceed)
+      if (sAsset.type === 'fiat' && amount < FIAT_MINIMUM) {
+        checkMinimum();
+        return;
+      }
+
+      if (!toAddress) {
+        showMessage('Please enter your wallet address', 'warning');
+        return;
+      }
+
+      // Email is required
+      const email = notifyEmail.value.trim();
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showMessage('Please enter a valid email address for order updates', 'warning');
+        notifyEmail.focus();
+        return;
+      }
+
+      // Disable button during processing
+      exchangeBtn.disabled = true;
+      exchangeBtn.textContent = 'Processing...';
+
+      try {
+        console.log('Sending request to /api/order/create');
+        const orderData = {
+          fromCcy: state.send,
+          toCcy: state.receive,
+          amount: amount.toString(),
+          toAddress: toAddress,
+          type: state.rateType,
+          email: email
+        };
+
+        const res = await fetch('/api/order/create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(orderData)
+        });
+
+        console.log('Response status:', res.status);
+        const result = await res.json();
+        console.log('Response data:', result);
+
+        if (result.code === 0 && result.data) {
+          // Redirect to order page
+          window.location.href = `/order.html?id=${result.data.id}`;
+        } else {
+          showMessage(result.error || result.msg || 'Failed to create order. Please try again.');
+        }
+      } catch (err) {
+        console.error('Exchange error:', err);
+        showMessage('Connection error. Please try again.');
+      } finally {
+        exchangeBtn.disabled = false;
+        exchangeBtn.textContent = 'Exchange now';
+      }
+    });
+
+    // --- AUTH CHECK ---
+    function checkAuth() {
+      const token = localStorage.getItem('astroshift_token');
+      const loginBtn = document.getElementById('loginBtn');
+      const logoutBtn = document.getElementById('logoutBtn');
+      const ordersNavLink = document.getElementById('ordersNavLink');
+
+      if (token) {
+        loginBtn.style.display = 'none';
+        logoutBtn.style.display = 'inline-block';
+        ordersNavLink.style.display = 'inline';
+      } else {
+        loginBtn.style.display = 'inline-block';
+        logoutBtn.style.display = 'none';
+        ordersNavLink.style.display = 'none';
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('astroshift_token');
+      localStorage.removeItem('astroshift_email');
+      checkAuth();
+      window.location.href = '/';
+    }
+
+    // CoinGecko ID mapping
+    const coinGeckoMap = {
+      BTC: 'bitcoin', ETH: 'ethereum', USDT: 'tether', BNB: 'binancecoin',
+      SOL: 'solana', XRP: 'ripple', USDC: 'usd-coin', DOGE: 'dogecoin',
+      ADA: 'cardano', TRX: 'tron', AVAX: 'avalanche-2', SHIB: 'shiba-inu',
+      DOT: 'polkadot', LINK: 'chainlink', MATIC: 'matic-network',
+      BCH: 'bitcoin-cash', LTC: 'litecoin', UNI: 'uniswap', APT: 'aptos',
+      ARB: 'arbitrum', OP: 'optimism', XMR: 'monero', ETC: 'ethereum-classic',
+      XLM: 'stellar', FIL: 'filecoin', ATOM: 'cosmos'
+    };
+
+    async function fetchPrices() {
+      try {
+        const ids = Object.values(coinGeckoMap).join(',');
+        const res = await fetch(https://api.coingecko.com/api/v3/simple/price?ids=&vs_currencies=usd);
+        const data = await res.json();
+        Object.keys(coinGeckoMap).forEach(symbol => {
+          const geckoId = coinGeckoMap[symbol];
+          if (data[geckoId] && data[geckoId].usd && ASSETS[symbol]) {
+            ASSETS[symbol].rate = data[geckoId].usd;
+          }
+        });
+        updateUI();
+      } catch (err) {
+        console.error('Failed to fetch prices:', err);
       } catch (err) {
         console.error('Failed to fetch prices:', err);
       }
