@@ -100,9 +100,37 @@ app.get('/', (req, res) => {
 // Trust proxy (needed for Railway/Cloudflare)
 app.set('trust proxy', 1);
 
-// Security Middleware
+// Security Middleware - Comprehensive headers for A+ rating
 app.use(helmet({
-  contentSecurityPolicy: false, // Disable CSP for now to avoid breaking scripts
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cryptologos.cc"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:", "https:", "blob:"],
+      connectSrc: ["'self'", "https://api.coingecko.com", "https://ff.io"],
+      frameSrc: ["'none'"],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: [],
+    },
+  },
+  strictTransportSecurity: {
+    maxAge: 31536000,
+    includeSubDomains: true,
+    preload: true,
+  },
+  xFrameOptions: { action: 'deny' },
+  xContentTypeOptions: true,
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+  permissionsPolicy: {
+    features: {
+      camera: [],
+      microphone: [],
+      geolocation: [],
+      payment: ["'self'"],
+    },
+  },
 }));
 
 // Rate Limiting
