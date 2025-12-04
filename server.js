@@ -9,7 +9,14 @@ const https = require('https');
 const sequelize = require('./database');
 const { Order, AuthCode, Session } = require('./models');
 
+const http = require('http');
+const { Server } = require('socket.io');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
 const PORT = process.env.PORT || 3000;
 
 // Email configuration (Resend)
@@ -92,6 +99,20 @@ app.get('/', (req, res) => {
 
 // Trust proxy (needed for Railway/Cloudflare)
 app.set('trust proxy', 1);
+
+// Security Middleware
+app.use(helmet({
+  contentSecurityPolicy: false, // Disable CSP for now to avoid breaking scripts
+}));
+
+// Rate Limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use('/api/', limiter); // Apply rate limiting to API routes
 
 // Session for admin panel
 const isProduction = process.env.NODE_ENV === 'production' || process.env.RAILWAY_ENVIRONMENT === 'production' || process.env.PORT;
@@ -798,6 +819,12 @@ app.get('/api/order/:id', async (req, res) => {
       const result = await ffApiRequest('order', { id: order.ffOrderId });
       if (result.code === 0) {
         await order.update({ status: result.data.status });
+
+        // Emit update to room
+        io.to(order.id).emit('order_update', {
+          status: result.data.status,
+          updatedAt: new Date()
+        });
       }
       res.json(result);
     } else {
@@ -1049,7 +1076,21 @@ initialize().then(async () => {
     console.error('❌ Database sync failed:', err);
   }
 
-  app.listen(PORT, () => {
+  // Socket.io connection
+  io.on('connection', (socket) => {
+    console.log('Client connected:', socket.id);
+
+    socket.on('join_order', (orderId) => {
+      socket.join(orderId);
+      console.log(`Socket ${socket.id} joined order room: ${orderId}`);
+    });
+
+    socket.on('disconnect', () => {
+      console.log('Client disconnected:', socket.id);
+    });
+  });
+
+  server.listen(PORT, () => {
     console.log(`🚀 AstroShift server running on port ${PORT}`);
     console.log(`📍 Admin panel: http://localhost:${PORT}/${config.admin.secretPath}`);
   });
