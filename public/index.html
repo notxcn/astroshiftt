@@ -3,8 +3,10 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AstroShift.io | Lightning Fast Exchange</title>
+  <meta name="description"
+    content="Exchange cryptocurrency instantly with AstroShift. Lightning-fast Bitcoin, Ethereum, USDT swaps with no registration, no KYC. Trusted since 2018." />
 
   <link rel="icon"
     href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><defs><radialGradient id=%22grad%22 cx=%2230%25%22 cy=%2230%25%22 r=%2270%25%22><stop offset=%220%25%22 stop-color=%22%2300d4ff%22/><stop offset=%22100%25%22 stop-color=%22%234f7eff%22/></radialGradient></defs><circle cx=%2250%22 cy=%2250%22 r=%2240%22 fill=%22url(%23grad)%22 stroke=%22white%22 stroke-width=%222%22/></svg>">
@@ -972,7 +974,7 @@
       display: grid;
       grid-template-columns: 150px 1fr 80px;
       align-items: center;
-      background: linear-gradient(90deg, rgba(20,25,50,0.9) 0%, rgba(30,35,60,0.85) 100%);
+      background: linear-gradient(90deg, rgba(20, 25, 50, 0.9) 0%, rgba(30, 35, 60, 0.85) 100%);
       padding: 12px 20px;
       border-radius: 8px;
       border: none;
@@ -1656,10 +1658,10 @@
       renderIcon('receiveIconWrapper', rAsset);
 
       // Display live prices
-      const fp=(r)=>r>=1?'$'+r.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):'$'+r.toPrecision(4);
-      const sP=document.getElementById('sendPrice'),rP=document.getElementById('receivePrice');
-      if(sP)sP.textContent=sAsset.type==='fiat'?'USD':fp(sAsset.rate);
-      if(rP)rP.textContent=rAsset.type==='fiat'?'USD':fp(rAsset.rate);
+      const fp = (r) => r >= 1 ? '$' + r.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '$' + r.toPrecision(4);
+      const sP = document.getElementById('sendPrice'), rP = document.getElementById('receivePrice');
+      if (sP) sP.textContent = sAsset.type === 'fiat' ? 'USD' : fp(sAsset.rate);
+      if (rP) rP.textContent = rAsset.type === 'fiat' ? 'USD' : fp(rAsset.rate);
 
       const sRate = sAsset.rate.toLocaleString();
       const rRate = rAsset.rate.toLocaleString();
@@ -1789,22 +1791,22 @@
 
     // --- LIVE TRANSACTIONS (with localStorage persistence) ---
     const TX_STORAGE_KEY = 'astro_recent_txs';
-    
+
     // Load saved transactions or return null
     function loadSavedTxs() {
       try {
         const saved = localStorage.getItem(TX_STORAGE_KEY);
         return saved ? JSON.parse(saved) : null;
-      } catch(e) { return null; }
+      } catch (e) { return null; }
     }
-    
+
     // Save transactions to localStorage
     function saveTxs() {
       const rows = recentList.querySelectorAll('.tx-row');
       const txData = Array.from(rows).map(row => row.outerHTML);
       localStorage.setItem(TX_STORAGE_KEY, JSON.stringify(txData));
     }
-    
+
     // Render saved transactions
     function renderSavedTxs() {
       const saved = loadSavedTxs();
@@ -1814,7 +1816,7 @@
       }
       return false;
     }
-    
+
     const fiatKeys = ['CASHAPP', 'ZELLE', 'PAYPAL'];
     const cryptoKeys = Object.keys(ASSETS).filter(k => {
       const a = ASSETS[k];
@@ -2114,13 +2116,13 @@
 
     // CoinGecko mapping
     const coinGeckoMap = {
-      BTC:'bitcoin',ETH:'ethereum',USDT:'tether',BNB:'binancecoin',
-      SOL:'solana',XRP:'ripple',USDC:'usd-coin',DOGE:'dogecoin',
-      ADA:'cardano',TRX:'tron',AVAX:'avalanche-2',SHIB:'shiba-inu',
-      DOT:'polkadot',LINK:'chainlink',MATIC:'matic-network',
-      BCH:'bitcoin-cash',LTC:'litecoin',UNI:'uniswap',APT:'aptos',
-      ARB:'arbitrum',OP:'optimism',XMR:'monero',ETC:'ethereum-classic',
-      XLM:'stellar',FIL:'filecoin',ATOM:'cosmos'
+      BTC: 'bitcoin', ETH: 'ethereum', USDT: 'tether', BNB: 'binancecoin',
+      SOL: 'solana', XRP: 'ripple', USDC: 'usd-coin', DOGE: 'dogecoin',
+      ADA: 'cardano', TRX: 'tron', AVAX: 'avalanche-2', SHIB: 'shiba-inu',
+      DOT: 'polkadot', LINK: 'chainlink', MATIC: 'matic-network',
+      BCH: 'bitcoin-cash', LTC: 'litecoin', UNI: 'uniswap', APT: 'aptos',
+      ARB: 'arbitrum', OP: 'optimism', XMR: 'monero', ETC: 'ethereum-classic',
+      XLM: 'stellar', FIL: 'filecoin', ATOM: 'cosmos'
     };
 
     async function fetchPrices() {
