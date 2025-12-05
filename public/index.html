@@ -1819,8 +1819,10 @@
         amtString = val.toFixed(4);
       }
 
-      const time = "Just now";
-      const seconds = Math.floor(Math.random() * 30) + 2;
+      // Time ago based on list position
+      const txCount = recentList.children.length;
+      const time = txCount === 0 ? 'a few seconds ago' : txCount === 1 ? 'a minute ago' : txCount + ' minutes ago';
+      const seconds = Math.floor(Math.random() * 10) + 1;
       const row = document.createElement('div');
       row.className = 'tx-row';
 
@@ -1844,7 +1846,7 @@
           <div class="tx-asset">
             ${getImg(sourceKey)} <span class="tx-amt">${amtString}</span> <span class="tx-ticker" ${getColorStyle(sourceKey)}>${sourceKey}</span>
           </div>
-          <div class="tx-arrow">➜</div>
+          <div class="tx-arrow">→</div>
           <div class="tx-asset">
             ${getImg(destKey)} <span class="tx-ticker" ${getColorStyle(destKey)}>${destKey}</span>
           </div>
