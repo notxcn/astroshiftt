@@ -177,7 +177,7 @@
       letter-spacing: -0.02em;
       display: flex;
       align-items: center;
-      gap: 0;
+      gap: 12px;
     }
 
     .logo-icon {
@@ -639,7 +639,7 @@
     .email-toggle {
       display: flex;
       align-items: center;
-      gap: 0;
+      gap: 12px;
       cursor: pointer;
       user-select: none;
     }
@@ -950,14 +950,9 @@
     }
 
     .section-title {
-      font-size: 2.4rem;
-      font-weight: 600;
+      font-size: 2rem;
+      font-weight: 700;
       margin-bottom: 10px;
-      font-style: italic;
-      background: linear-gradient(90deg, #fff 0%, #c4d0ff 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
     }
 
     .section-sub {
@@ -974,18 +969,14 @@
 
     .tx-row {
       display: grid;
-      grid-template-columns: 140px 1fr 80px;
+      grid-template-columns: 1fr 2fr 1fr;
       align-items: center;
-      background: linear-gradient(90deg, rgba(25,28,50,0.95) 0%, rgba(35,40,65,0.9) 100%);
-      padding: 14px 20px;
-      border-radius: 10px;
-      border: none;
-      margin-bottom: 8px;
-      transition: all 0.2s;
-    }
-    
-    .tx-row:nth-child(even) {
-      background: linear-gradient(90deg, rgba(30,33,55,0.95) 0%, rgba(40,45,70,0.9) 100%);
+      background: rgba(255, 255, 255, 0.03);
+      padding: 15px 25px;
+      border-radius: var(--rad-pill);
+      border: 1px solid rgba(255, 255, 255, 0.02);
+      transition: background 0.2s;
+      animation: slideDown 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
     }
 
     .tx-row:hover {
@@ -1005,9 +996,8 @@
     }
 
     .tx-time {
-      color: rgba(255,255,255,0.5);
-      font-size: 0.82rem;
-      font-weight: 400;
+      color: var(--text-muted);
+      font-size: 0.9rem;
     }
 
     .tx-pair {
@@ -1042,13 +1032,12 @@
 
     .tx-status {
       text-align: right;
-      color: rgba(255,255,255,0.45);
-      font-size: 0.82rem;
+      color: var(--accent-cyan);
+      font-size: 0.85rem;
       display: flex;
       align-items: center;
       justify-content: flex-end;
       gap: 5px;
-      font-weight: 400;
     }
 
     .tx-icon-sm {
@@ -1825,10 +1814,8 @@
         amtString = val.toFixed(4);
       }
 
-      // Time ago based on list position
-      const txCount = recentList.children.length;
-      const time = txCount === 0 ? 'a few seconds ago' : txCount === 1 ? 'a minute ago' : txCount + ' minutes ago';
-      const seconds = Math.floor(Math.random() * 10) + 1;
+      const time = "Just now";
+      const seconds = Math.floor(Math.random() * 30) + 2;
       const row = document.createElement('div');
       row.className = 'tx-row';
 
@@ -1852,7 +1839,7 @@
           <div class="tx-asset">
             ${getImg(sourceKey)} <span class="tx-amt">${amtString}</span> <span class="tx-ticker" ${getColorStyle(sourceKey)}>${sourceKey}</span>
           </div>
-          <div class="tx-arrow">→</div>
+          <div class="tx-arrow">➜</div>
           <div class="tx-asset">
             ${getImg(destKey)} <span class="tx-ticker" ${getColorStyle(destKey)}>${destKey}</span>
           </div>
