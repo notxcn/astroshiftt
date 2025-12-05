@@ -950,9 +950,10 @@
     }
 
     .section-title {
-      font-size: 2rem;
-      font-weight: 700;
+      font-size: 2.2rem;
+      font-weight: 600;
       margin-bottom: 10px;
+      font-style: italic;
     }
 
     .section-sub {
@@ -969,14 +970,14 @@
 
     .tx-row {
       display: grid;
-      grid-template-columns: 1fr 2fr 1fr;
+      grid-template-columns: 150px 1fr 80px;
       align-items: center;
-      background: rgba(255, 255, 255, 0.03);
-      padding: 15px 25px;
-      border-radius: var(--rad-pill);
-      border: 1px solid rgba(255, 255, 255, 0.02);
+      background: linear-gradient(90deg, rgba(20,25,50,0.9) 0%, rgba(30,35,60,0.85) 100%);
+      padding: 12px 20px;
+      border-radius: 8px;
+      border: none;
+      margin-bottom: 6px;
       transition: background 0.2s;
-      animation: slideDown 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
     }
 
     .tx-row:hover {
@@ -1786,7 +1787,34 @@
       if (!dropdown.contains(e.target)) dropdown.classList.add('hidden');
     });
 
-    // --- LIVE TRANSACTIONS ---
+    // --- LIVE TRANSACTIONS (with localStorage persistence) ---
+    const TX_STORAGE_KEY = 'astro_recent_txs';
+    
+    // Load saved transactions or return null
+    function loadSavedTxs() {
+      try {
+        const saved = localStorage.getItem(TX_STORAGE_KEY);
+        return saved ? JSON.parse(saved) : null;
+      } catch(e) { return null; }
+    }
+    
+    // Save transactions to localStorage
+    function saveTxs() {
+      const rows = recentList.querySelectorAll('.tx-row');
+      const txData = Array.from(rows).map(row => row.outerHTML);
+      localStorage.setItem(TX_STORAGE_KEY, JSON.stringify(txData));
+    }
+    
+    // Render saved transactions
+    function renderSavedTxs() {
+      const saved = loadSavedTxs();
+      if (saved && saved.length > 0) {
+        recentList.innerHTML = saved.join('');
+        return true;
+      }
+      return false;
+    }
+    
     const fiatKeys = ['CASHAPP', 'ZELLE', 'PAYPAL'];
     const cryptoKeys = Object.keys(ASSETS).filter(k => {
       const a = ASSETS[k];
@@ -1814,8 +1842,10 @@
         amtString = val.toFixed(4);
       }
 
-      const time = "Just now";
-      const seconds = Math.floor(Math.random() * 30) + 2;
+      // Time based on position: first 4 = "a few seconds ago", rest = "a minute ago"
+      const pos = recentList.children.length;
+      const time = pos < 4 ? 'a few seconds ago' : 'a minute ago';
+      const seconds = Math.floor(Math.random() * 8) + 1;
       const row = document.createElement('div');
       row.className = 'tx-row';
 
@@ -1837,11 +1867,11 @@
         <div class="tx-time">${time}</div>
         <div class="tx-pair">
           <div class="tx-asset">
-            ${getImg(sourceKey)} <span class="tx-amt">${amtString}</span> <span class="tx-ticker" ${getColorStyle(sourceKey)}>${sourceKey}</span>
+            <span class="tx-amt">${amtString}</span> <span class="tx-ticker">${sourceKey}</span> ${getImg(sourceKey)}
           </div>
-          <div class="tx-arrow">➜</div>
+          <div class="tx-arrow">→</div>
           <div class="tx-asset">
-            ${getImg(destKey)} <span class="tx-ticker" ${getColorStyle(destKey)}>${destKey}</span>
+            ${getImg(destKey)} <span class="tx-ticker">${destKey}</span>
           </div>
         </div>
         <div class="tx-status">⏱ ${seconds} sec</div>
@@ -1951,8 +1981,13 @@
 
     // --- INIT ---
     updateUI();
-    addTransaction(); addTransaction(); addTransaction();
-    setInterval(addTransaction, 120000);
+    // Try to load saved transactions, otherwise generate new ones
+    if (!renderSavedTxs()) {
+      for (let i = 0; i < 10; i++) addTransaction();
+      saveTxs();
+    }
+    // Add new transaction every 2 min and save
+    setInterval(() => { addTransaction(); saveTxs(); }, 120000);
 
     // --- EXCHANGE BUTTON HANDLER ---
     const exchangeBtn = document.getElementById('exchangeBtn');
