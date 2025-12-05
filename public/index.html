@@ -1797,366 +1797,71 @@
       if (!dropdown.contains(e.target)) dropdown.classList.add('hidden');
     });
 
-    // --- LIVE TRANSACTIONS (Persistent with localStorage) ---
+    // --- LIVE TRANSACTIONS ---
     const fiatKeys = ['CASHAPP', 'ZELLE', 'PAYPAL'];
     const cryptoKeys = Object.keys(ASSETS).filter(k => {
       const a = ASSETS[k];
       return a.type === 'crypto' && !a.stable;
     });
 
-    // Generate a random transaction
-    function generateTx() {
-      const isFiat = Math.random() < 0.7;
-      const src = isFiat ? fiatKeys[Math.floor(Math.random() * fiatKeys.length)] : cryptoKeys[Math.floor(Math.random() * cryptoKeys.length)];
-      let dest = cryptoKeys[Math.floor(Math.random() * cryptoKeys.length)];
-      while (src === dest) dest = cryptoKeys[Math.floor(Math.random() * cryptoKeys.length)];
-      const sA = ASSETS[src];
-      const amt = sA.type === 'fiat' ? (Math.floor(Math.random() * 4900) + 100).toLocaleString() : (Math.random() * (1000 / Math.max(sA.rate, 0.01))).toFixed(4);
-      return { src, dest, amt, sec: Math.floor(Math.random() * 10) + 1, ts: Date.now() };
-    }
-
-    // Time ago text
-    function timeAgo(ts) {
-      const s = Math.floor((Date.now() - ts) / 1000);
-      if (s < 60) return 'a few seconds ago';
-      const m = Math.floor(s / 60);
-      if (m === 1) return 'a minute ago';
-      if (m < 60) return m + ' minutes ago';
-      return Math.floor(m / 60) + ' hours ago';
-    }
-
-    // Load or create transactions (persisted in localStorage)
-    function loadTxs() {
-      const stored = localStorage.getItem('astro_txs');
-      if (stored) return JSON.parse(stored);
-      // First load: generate 10 transactions with staggered times
-      const txs = [];
-      const now = Date.now();
-      for (let i = 0; i < 10; i++) {
-        const tx = generateTx();
-        tx.ts = now - (i * 60000); // Each 1 minute apart
-        txs.push(tx);
+    function addTransaction() {
+      const isFiatSource = Math.random() < 0.7;
+      let sourceKey;
+      if (isFiatSource) {
+        sourceKey = fiatKeys[Math.floor(Math.random() * fiatKeys.length)];
+      } else {
+        sourceKey = cryptoKeys[Math.floor(Math.random() * cryptoKeys.length)];
       }
-      localStorage.setItem('astro_txs', JSON.stringify(txs));
-      return txs;
-    }
+      let destKey = cryptoKeys[Math.floor(Math.random() * cryptoKeys.length)];
+      while (sourceKey === destKey) destKey = cryptoKeys[Math.floor(Math.random() * cryptoKeys.length)];
 
-    // Render transaction row HTML
-    function txRow(tx) {
+      const sA = ASSETS[sourceKey];
+      let amtString;
+      if (sA.type === 'fiat') {
+        const val = Math.floor(Math.random() * 4900) + 100;
+        amtString = val.toLocaleString();
+      } else {
+        const val = (Math.random() * (1000 / sA.rate));
+        amtString = val.toFixed(4);
+      }
+
+      // Time ago based on list position
+      const txCount = recentList.children.length;
+      const time = txCount === 0 ? 'a few seconds ago' : txCount === 1 ? 'a minute ago' : txCount + ' minutes ago';
+      const seconds = Math.floor(Math.random() * 10) + 1;
+      const row = document.createElement('div');
+      row.className = 'tx-row';
+
       const getImg = (id) => {
         const a = ASSETS[id];
-        if (!a) return '';
-        if (a.type === 'fiat') return `<div class="tx-icon-fiat" style="background:${a.color}">${a.id === 'CASHAPP' ? '
-
-    // --- FAQ TOGGLES ---
-    document.querySelectorAll('.faq-head').forEach(head => {
-      head.addEventListener('click', () => {
-        const item = head.parentElement;
-        const isActive = item.classList.contains('active');
-        document.querySelectorAll('.faq-item').forEach(i => {
-          i.classList.remove('active');
-          i.querySelector('.faq-body').style.maxHeight = null;
-        });
-        if (!isActive) {
-          item.classList.add('active');
-          const body = item.querySelector('.faq-body');
-          body.style.maxHeight = body.scrollHeight + "px";
+        if (a.type === 'fiat') {
+          return `<div class="tx-icon-fiat" style="background:${a.color}">${a.id === 'CASHAPP' ? '$' : a.id === 'PAYPAL' ? 'P' : 'Z'}</div>`;
         }
-      });
-    });
-
-    // --- MINIMUM AMOUNT WARNING SETUP ---
-    const minWarning = document.getElementById('minWarning');
-    const minAmountValue = document.getElementById('minAmountValue');
-    const FIAT_MINIMUM = 5;
-
-    function checkMinimum() {
-      const sAsset = ASSETS[state.send];
-      const amount = parseFloat(sendInput.value) || 0;
-
-      if (sAsset.type === 'fiat') {
-        minAmountValue.textContent = '$' + FIAT_MINIMUM + '.00';
-        if (amount > 0 && amount < FIAT_MINIMUM) {
-          minWarning.classList.remove('hidden');
-          return false;
-        }
-      }
-      minWarning.classList.add('hidden');
-      return true;
-    }
-
-    // --- EMAIL INPUT ---
-    const notifyEmail = document.getElementById('notifyEmail');
-
-    // --- ADDRESS VALIDATION ---
-    const addressValidation = document.getElementById('addressValidation');
-    const destWalletInput = document.getElementById('destWallet');
-    let validationTimeout;
-
-    async function validateAddress() {
-      const address = destWalletInput.value.trim();
-      const currency = state.receive;
-
-      if (!address) {
-        addressValidation.classList.add('hidden');
-        return;
-      }
-
-      try {
-        const res = await fetch('/api/validate-address', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ address, currency })
-        });
-        const result = await res.json();
-
-        addressValidation.classList.remove('hidden', 'valid', 'invalid');
-        if (result.valid) {
-          addressValidation.classList.add('valid');
-          addressValidation.innerHTML = '<span class="validation-icon">✓</span><span>Valid ' + currency + ' address</span>';
-        } else {
-          addressValidation.classList.add('invalid');
-          addressValidation.innerHTML = '<span class="validation-icon">✗</span><span>Invalid ' + currency + ' address format</span>';
-        }
-      } catch (err) {
-        addressValidation.classList.add('hidden');
-      }
-    }
-
-    destWalletInput.addEventListener('input', () => {
-      clearTimeout(validationTimeout);
-      validationTimeout = setTimeout(validateAddress, 500);
-    });
-
-    // --- PASTE BUTTON ---
-    document.getElementById('pasteBtn').addEventListener('click', async () => {
-      try {
-        const text = await navigator.clipboard.readText();
-        destWalletInput.value = text;
-        validateAddress();
-      } catch (err) {
-        console.log('Paste failed:', err);
-      }
-    });
-
-    // Listen for input changes - recalculate on every keystroke
-    sendInput.addEventListener('input', () => {
-      state.amount = parseFloat(sendInput.value);
-      calculate();
-      checkMinimum();
-    });
-
-    // --- INIT ---
-    updateUI();
-    renderTxs();
-    setInterval(addNewTx, 120000);
-    setInterval(updateTimes, 30000);
-
-    // --- EXCHANGE BUTTON HANDLER ---
-    const exchangeBtn = document.getElementById('exchangeBtn');
-    const destWallet = document.getElementById('destWallet');
-    const exchangeMessage = document.getElementById('exchangeMessage');
-    const messageText = document.getElementById('messageText');
-
-    function showMessage(text, type = 'error') {
-      messageText.textContent = text;
-      exchangeMessage.className = 'exchange-message ' + type;
-      exchangeMessage.classList.remove('hidden');
-
-      // Auto-hide after 5 seconds
-      setTimeout(() => {
-        exchangeMessage.classList.add('hidden');
-      }, 5000);
-    }
-
-    function hideMessage() {
-      exchangeMessage.classList.add('hidden');
-    }
-
-    exchangeBtn.addEventListener('click', async (e) => {
-      e.preventDefault();
-      hideMessage();
-      console.log('Exchange button clicked');
-
-      const sAsset = ASSETS[state.send];
-      const rAsset = ASSETS[state.receive];
-      const amount = parseFloat(sendInput.value);
-      const toAddress = destWallet.value.trim();
-
-      console.log('Order details:', { send: state.send, receive: state.receive, amount, toAddress });
-
-      // Validation
-      if (!amount || amount <= 0) {
-        showMessage('Please enter a valid amount', 'warning');
-        return;
-      }
-
-      // Check minimum for fiat (show warning, don't proceed)
-      if (sAsset.type === 'fiat' && amount < FIAT_MINIMUM) {
-        checkMinimum();
-        return;
-      }
-
-      if (!toAddress) {
-        showMessage('Please enter your wallet address', 'warning');
-        return;
-      }
-
-      // Email is required
-      const email = notifyEmail.value.trim();
-      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        showMessage('Please enter a valid email address for order updates', 'warning');
-        notifyEmail.focus();
-        return;
-      }
-
-      // Disable button during processing
-      exchangeBtn.disabled = true;
-      exchangeBtn.textContent = 'Processing...';
-
-      try {
-        console.log('Sending request to /api/order/create');
-        const orderData = {
-          fromCcy: state.send,
-          toCcy: state.receive,
-          amount: amount.toString(),
-          toAddress: toAddress,
-          type: state.rateType,
-          email: email
-        };
-
-        const res = await fetch('/api/order/create', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(orderData)
-        });
-
-        console.log('Response status:', res.status);
-        const result = await res.json();
-        console.log('Response data:', result);
-
-        if (result.code === 0 && result.data) {
-          // Redirect to order page
-          window.location.href = `/order.html?id=${result.data.id}`;
-        } else {
-          showMessage(result.error || result.msg || 'Failed to create order. Please try again.');
-        }
-      } catch (err) {
-        console.error('Exchange error:', err);
-        showMessage('Connection error. Please try again.');
-      } finally {
-        exchangeBtn.disabled = false;
-        exchangeBtn.textContent = 'Exchange now';
-      }
-    });
-
-    // --- AUTH CHECK ---
-    function checkAuth() {
-      const token = localStorage.getItem('astroshift_token');
-      const loginBtn = document.getElementById('loginBtn');
-      const logoutBtn = document.getElementById('logoutBtn');
-      const ordersNavLink = document.getElementById('ordersNavLink');
-
-      if (token) {
-        loginBtn.style.display = 'none';
-        logoutBtn.style.display = 'inline-block';
-        ordersNavLink.style.display = 'inline';
-      } else {
-        loginBtn.style.display = 'inline-block';
-        logoutBtn.style.display = 'none';
-        ordersNavLink.style.display = 'none';
-      }
-    }
-
-    function logout() {
-      localStorage.removeItem('astroshift_token');
-      localStorage.removeItem('astroshift_email');
-      checkAuth();
-      window.location.href = '/';
-    }
-
-    // CoinGecko mapping
-    const coinGeckoMap = {
-      BTC:'bitcoin',ETH:'ethereum',USDT:'tether',BNB:'binancecoin',
-      SOL:'solana',XRP:'ripple',USDC:'usd-coin',DOGE:'dogecoin',
-      ADA:'cardano',TRX:'tron',AVAX:'avalanche-2',SHIB:'shiba-inu',
-      DOT:'polkadot',LINK:'chainlink',MATIC:'matic-network',
-      BCH:'bitcoin-cash',LTC:'litecoin',UNI:'uniswap',APT:'aptos',
-      ARB:'arbitrum',OP:'optimism',XMR:'monero',ETC:'ethereum-classic',
-      XLM:'stellar',FIL:'filecoin',ATOM:'cosmos'
-    };
-
-    async function fetchPrices() {
-      try {
-        const ids = Object.values(coinGeckoMap).join(',');
-        const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`);
-        const data = await res.json();
-        Object.keys(coinGeckoMap).forEach(sym => {
-          const gid = coinGeckoMap[sym];
-          if (data[gid] && data[gid].usd && ASSETS[sym]) ASSETS[sym].rate = data[gid].usd;
-        });
-        updateUI();
-      } catch (e) {
-        console.error('Price fetch error:', e);
-      }
-    }
-
-    // Initial fetch and update every 60 seconds
-    fetchPrices();
-    setInterval(fetchPrices, 60000);
-
-    checkAuth();
-
-
-  </script>
-
-  <footer
-    style="text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.9rem; border-top: 1px solid var(--border-color); margin-top: 60px;">
-    <div style="margin-bottom: 20px;">
-      <a href="/terms.html" style="color: inherit; text-decoration: none; margin: 0 10px;">Terms of Service</a>
-      <a href="/privacy.html" style="color: inherit; text-decoration: none; margin: 0 10px;">Privacy Policy</a>
-      <a href="/risk.html" style="color: inherit; text-decoration: none; margin: 0 10px;">Risk Disclosure</a>
-    </div>
-    <p>&copy; 2025 AstroShift. All rights reserved.</p>
-  </footer>
-</body>
-
-</html> : a.id === 'PAYPAL' ? 'P' : 'Z'}</div>`;
-        const cls = id === 'XLM' ? ' icon-invert' : '';
-        return `<img src="${getLogo(id)}" class="tx-icon-sm${cls}">`;
+        // FIX FOR XLM IN TRANSACTIONS LIST
+        const extraClass = id === 'XLM' ? ' icon-invert' : '';
+        return `<img src="${getLogo(id)}" class="tx-icon-sm${extraClass}">`;
       };
-      return `<div class="tx-row">
-        <div class="tx-time">${timeAgo(tx.ts)}</div>
+      const getColorStyle = (id) => {
+        const a = ASSETS[id];
+        return a.color ? `style="color:${a.color}"` : '';
+      }
+
+      row.innerHTML = `
+        <div class="tx-time">${time}</div>
         <div class="tx-pair">
-          <div class="tx-asset"><span class="tx-amt">${tx.amt}</span> <span class="tx-ticker">${tx.src}</span> ${getImg(tx.src)}</div>
+          <div class="tx-asset">
+            ${getImg(sourceKey)} <span class="tx-amt">${amtString}</span> <span class="tx-ticker" ${getColorStyle(sourceKey)}>${sourceKey}</span>
+          </div>
           <div class="tx-arrow">→</div>
-          <div class="tx-asset">${getImg(tx.dest)} <span class="tx-ticker">${tx.dest}</span></div>
+          <div class="tx-asset">
+            ${getImg(destKey)} <span class="tx-ticker" ${getColorStyle(destKey)}>${destKey}</span>
+          </div>
         </div>
-        <div class="tx-status">⏱ ${tx.sec} sec</div>
-      </div>`;
-    }
+        <div class="tx-status">⏱ ${seconds} sec</div>
+      `;
 
-    // Render all transactions (newest at top = first in array)
-    function renderTxs() {
-      const txs = loadTxs();
-      recentList.innerHTML = txs.map(tx => txRow(tx)).join('');
-    }
-
-    // Add new transaction to top
-    function addNewTx() {
-      const txs = loadTxs();
-      const newTx = generateTx();
-      txs.unshift(newTx); // Add to beginning (top)
-      if (txs.length > 10) txs.pop(); // Remove oldest (bottom)
-      localStorage.setItem('astro_txs', JSON.stringify(txs));
-      renderTxs();
-    }
-
-    // Update time displays every 30 seconds
-    function updateTimes() {
-      const txs = loadTxs();
-      const rows = recentList.querySelectorAll('.tx-time');
-      rows.forEach((el, i) => { if (txs[i]) el.textContent = timeAgo(txs[i].ts); });
+      recentList.prepend(row);
+      if (recentList.children.length > 10) recentList.lastChild.remove();
     }
 
     // --- FAQ TOGGLES ---
