@@ -1626,6 +1626,7 @@
       } else if (logoUrl) {
         const img = document.createElement('img');
         img.src = logoUrl;
+        img.alt = asset.name + ' logo';
         img.className = "asset-icon-img";
         // FIX FOR XLM IN DROPDOWN/WIDGET
         if (asset.id === 'XLM') { img.classList.add('icon-invert'); }
@@ -1746,7 +1747,7 @@
         } else if (logo) {
           // FIX FOR XLM IN DROPDOWN LIST
           const extraClass = asset.id === 'XLM' ? ' icon-invert' : '';
-          iconHtml = `<img src="${logo}" class="dd-icon${extraClass}">`;
+          iconHtml = `<img src="${logo}" alt="${asset.name} logo" class="dd-icon${extraClass}">`;
         } else {
           iconHtml = `<div class="dd-icon icon-fiat" style="background:#555">${asset.id[0]}</div>`;
         }
@@ -1858,7 +1859,7 @@
         }
         // FIX FOR XLM IN TRANSACTIONS LIST
         const extraClass = id === 'XLM' ? ' icon-invert' : '';
-        return `<img src="${getLogo(id)}" class="tx-icon-sm${extraClass}">`;
+        return `<img src="${getLogo(id)}" alt="${a.name} logo" class="tx-icon-sm${extraClass}">`;
       };
       const getColorStyle = (id) => {
         const a = ASSETS[id];
