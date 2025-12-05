@@ -639,7 +639,7 @@
     .email-toggle {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 0;
       cursor: pointer;
       user-select: none;
     }
@@ -974,14 +974,18 @@
 
     .tx-row {
       display: grid;
-      grid-template-columns: 1fr 2fr 1fr;
+      grid-template-columns: 140px 1fr 80px;
       align-items: center;
-      background: rgba(255, 255, 255, 0.03);
-      padding: 15px 25px;
-      border-radius: var(--rad-pill);
-      border: 1px solid rgba(255, 255, 255, 0.02);
-      transition: background 0.2s;
-      animation: slideDown 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+      background: linear-gradient(90deg, rgba(25,28,50,0.95) 0%, rgba(35,40,65,0.9) 100%);
+      padding: 14px 20px;
+      border-radius: 10px;
+      border: none;
+      margin-bottom: 8px;
+      transition: all 0.2s;
+    }
+    
+    .tx-row:nth-child(even) {
+      background: linear-gradient(90deg, rgba(30,33,55,0.95) 0%, rgba(40,45,70,0.9) 100%);
     }
 
     .tx-row:hover {
@@ -1001,8 +1005,9 @@
     }
 
     .tx-time {
-      color: var(--text-muted);
-      font-size: 0.9rem;
+      color: rgba(255,255,255,0.5);
+      font-size: 0.82rem;
+      font-weight: 400;
     }
 
     .tx-pair {
@@ -1037,12 +1042,13 @@
 
     .tx-status {
       text-align: right;
-      color: var(--accent-cyan);
-      font-size: 0.85rem;
+      color: rgba(255,255,255,0.45);
+      font-size: 0.82rem;
       display: flex;
       align-items: center;
       justify-content: flex-end;
       gap: 5px;
+      font-weight: 400;
     }
 
     .tx-icon-sm {
